@@ -1,0 +1,285 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using JZSoft.CodeGen
+@model List<ApiModel>
+<div class="row">
+    <button type="button" id="btnSetJsonShow" class="btn btn-primary">
+        设置Json
+    </button>
+</div>
+@if (Model == null)
+{
+    <p><em>Loading...</em></p> 
+}
+else
+{
+
+    <table class="table" id="tdTags">
+        <thead>
+            <tr>
+                <th>Tags</th>
+                <th>ApiPath</th>
+                <th>Method</th>
+                <th>RequestInput</th>
+                <th>ResponseOutput</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div class="modal fade" id="configJsonModal" tabindex="-1" role="dialog" aria-labelledby="Json Input">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        配置代码生成
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="txtJsonInput" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        关闭
+                    </button>
+                    <button type="button" id="btnSubmit" class="btn btn-primary">
+                        提交更改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        模态框（Modal）标题
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form action="GenCode" target="_blank" method="post" id="gencode">
+                        <div class="form-group">
+                            <label for="TagName">TagName</label>
+                            <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName">
+                        </div>
+                        <div class="form-group">
+                            <label for="ListMethod">ListMethod</label>
+                            <select class="form-control" name="ListMethod" id="ListMethod">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="CreateMethod">CreateMethod</label>
+                            <select class="form-control" name="CreateMethod" id="CreateMethod">
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="UpdateMethod">UpdateMethod</label>
+                            <select class="form-control" name="UpdateMethod" id="UpdateMethod">
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="DeleMethod">DeleMethod</label>
+                            <select class="form-control" name="DeleMethod" id="DeleMethod">
+                            </select>
+                        </div>
+                        <input type="hidden" name="json" id="jsonData" />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        关闭
+                    </button>
+                    <button type="button" id="btnSubmit" class="btn btn-primary">
+                        提交更改
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+}
+@section Scripts{
+
+    <script>
+        var swaggerJson = {};
+        var definitions = [];
+        var apiList = [];
+
+        function getDef() {
+            $.get("http://localhost:21021/swagger/v1/swagger.json", function (data) {
+                swaggerJson = data;
+                for (var k in swaggerJson.definitions) {
+                    var data = swaggerJson.definitions[k]; 
+                        definitions.push({ key: k, value: fillKeyValue(data) })
+                }
+                console.log(definitions)
+
+                for (var path in swaggerJson.paths) {
+                    var api = swaggerJson.paths[path]
+                    var apiDef = { path };
+                    for (var name in api) {
+                        apiDef.method = name;
+                    }
+                    var method = api[apiDef.method]
+                    apiDef.tag = method.tags.join()
+                    apiDef.responses = fillKeyValue(method.responses)
+                    apiDef.parameters = fillKeyValue(method.parameters)
+                    apiList.push(apiDef);
+                }
+                console.log(apiList);
+                getData()
+            });
+        }
+
+        var simpleTypes = ["boolean", "number", "bigint", "string"]
+        function isComplexData(data) {
+            if (data === undefined || data === null) {
+                return false;
+            } else if (simpleTypes.indexOf(typeof data) != -1) {
+                return false;
+            } else {
+                return true;
+            }
+
+        }
+        function fillKeyValue(data) {
+            var props = []
+            if (data instanceof Array) {
+                for (var i = 0; i < data.length; i++) { 
+                    var item = fillKeyValue(data[i]);
+                    props.push(item)
+                }
+            }
+            else if (isComplexData(data)) {
+                for (var key in data) {
+                    var objValue = {};
+                    if (key == "$ref") {
+                        var refPath = data[key];
+                        refPath = refPath.split('/').last();
+                        var refData = swaggerJson.definitions[refPath];
+                        objValue.refName = refPath;
+                        objValue.refData = fillKeyValue(refData);
+                    } else {
+                        objValue = fillKeyValue(data[key]);
+                    }
+                    var p = { key, value: objValue }
+                    props.push(p);
+                }
+            } else {
+                return data
+            }
+            return props;
+        }
+
+        function fillRef(data) {
+            for (var key in data) {
+                if (data.hasOwnProperty(key) && data[key]) {
+                    if (key == "$ref") {
+                        var refPath = data[key];
+                        refPath = refPath.split('/').last();
+                        var refData = swaggerJson.definitions[refPath];
+                        data.refName = refPath;
+                        data.refData = refData;
+                    } else if (typeof data[key] == "object") {
+                        data[key] = fillRef(data[key]);
+                    }
+                }
+
+                if (data.hasOwnProperty("parameters")) {
+                    for (var parameterName in data.parameters) {
+                        data.parameters.push({ name: parameterName, data: data.parameters[parameterName] })
+                    }
+                }
+
+                if (data.hasOwnProperty("required")) {
+                    for (var pName in data.properties) {
+                        data.name = pName;
+                        if (data.required.join(',').indexOf(pName) != -1) {
+                            data.properties[pName].isRequired = true;
+                        } else {
+                            data.properties[pName].isRequired = false;
+                        }
+                    }
+                }
+            }
+            return data;
+        }
+
+        function getData() {
+            $("#tdTags tbody").empty();
+            apiList.forEach(function (method) {
+                $("#tdTags tbody").append('<tr><td><a href="javascript:void(0);" class="show_config"  data-tag="' + method.tag
+                    + '">' + method.tag + '</a></td>'
+                    + '<td>' + method.path + '</td>'
+                    + '<td>' + method.method + '</td>'
+                    + '<td></td>'
+                    + '<td> </td>'
+                    + '</tr>'
+                )
+            })
+        }
+
+        $(function () {
+            getDef()
+            $("#btnSetJson").click(function () {
+                $("#configModal").modal();
+            })
+            $("#tdTags tbody").on("click", ".show_config", function () {
+                var tag = $(this).attr("data-tag");
+                $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod").empty()
+                var frm = $("form");
+                frm.find("#TagName").val(tag);
+                var allTags = [];
+                apiList.forEach(function (item) {
+                    if (item.tag == tag) {
+                        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod")
+                            .append("<option value='" + item.path + "'>" + item.path + "</option>");
+                        allTags.push(item);
+                    }
+                })
+                allTags.forEach(function (it) {
+                    var p = it.path.toLowerCase().split('/').last();
+                    if (p.indexOf("getall") > -1) {
+                        $("#ListMethod").val(it.path);
+                    } else if (p.indexOf("create") != -1) {
+                        $("#CreateMethod").val(it.path);
+                    } else if (p.indexOf("update") != -1) {
+                        $("#UpdateMethod").val(it.path);
+                    } else if (p.indexOf("delete") != -1) {
+                        $("#DeleMethod").val(it.path);
+                    }
+
+                });
+                $("#configModal").modal();
+            });
+            $(".container #btnSubmit").click(function () {
+                var frm = $("#gencode");
+                var apiConfig = {
+                    tag: $("#TagName").val(),
+                    ListApi: apiList.find(o => o.path == $("#ListMethod").val()),
+                    CreateApi: apiList.find(o => o.path == $("#CreateMethod").val()),
+                    UpdateApi: apiList.find(o => o.path == $("#UpdateMethod").val()),
+                    DeleteApi: apiList.find(o => o.path == $("#DeleMethod").val())
+                }
+                $("#jsonData").val(JSON.stringify(apiConfig))
+                console.log($("#jsonData").val())
+                frm.submit();
+
+            })
+        })
+        Array.prototype.last = function () {
+            var len = this.length
+            return this[len - 1];
+        }
+    </script>
+}

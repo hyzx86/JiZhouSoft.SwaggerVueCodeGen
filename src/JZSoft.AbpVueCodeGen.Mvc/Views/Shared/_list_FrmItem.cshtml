@@ -1,0 +1,39 @@
+﻿@using JZSoft.CodeGen
+@model PropertiesDef
+
+@if (Model.Name == "id")
+{
+    @*<el-form-item label="ID" v-if="(editModel.id)?true:false" prop="@Model.Name">
+        <el-input type="hidden" v-model='editModel.id' /> 
+    </el-form-item>*@
+}
+else
+{
+    <el-form-item label="@Model.Name" prop="@Model.Name">
+        @switch (Model.TypeStr)
+        {
+            case "string":
+                if (Model.Format == "date-time")
+                {
+                    <el-date-picker v-model="editModel.@Model.Name"
+                                    type="date"
+                                    placeholder="选择日期">
+                    </el-date-picker>
+                }
+                else
+                {
+                    <el-input v-model='editModel.@Model.Name' />
+                }
+                break;
+            case "number":
+            case "integer":
+                <el-input type="number" v-model='editModel.@Model.Name' />
+                break;
+            default:
+
+                <!--复杂属性，请自己实现    @Model.TypeStr-->
+                <el-input type="number" v-model='editModel.@Model.Name' />
+                break;
+        }
+    </el-form-item>
+}

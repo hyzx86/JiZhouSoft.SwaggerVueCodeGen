@@ -1,0 +1,12 @@
+﻿@using JZSoft.CodeGen
+@model PropertiesDef
+@if (Model.Name != "id")
+{
+    <el-table-column label="@Model.Name" prop="@Model.Name"
+                     sortable="custom" align="center" 
+                     :class-name="getSortClass('@Model.Name')">
+        <template slot-scope="scope">
+            <span>{{ scope.row.@Model.Name }}</span>
+        </template>
+    </el-table-column>
+}
