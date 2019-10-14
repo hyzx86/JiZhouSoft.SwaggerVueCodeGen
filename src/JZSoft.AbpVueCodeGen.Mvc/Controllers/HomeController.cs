@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using JZSoft.AbpVueCodeGen.Mvc.Models;
-using JZSoft.CodeGen;
-using Newtonsoft.Json.Linq;
+using JZSoft.AbpVueCodeGen.Mvc.Models;  
 
 namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 {
