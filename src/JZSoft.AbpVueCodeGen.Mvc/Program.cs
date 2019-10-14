@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace JZSoft.AbpVueCodeGen.Mvc
+namespace JiZhouSoft.SwaggerVueCodeGen
 {
     public class Program
     {

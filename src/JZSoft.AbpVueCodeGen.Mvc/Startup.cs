@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JZSoft.AbpVueCodeGen.Mvc.Controllers;
+using JiZhouSoft.SwaggerVueCodeGen.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JZSoft.AbpVueCodeGen.Mvc
+namespace JiZhouSoft.SwaggerVueCodeGen
 {
     public class Startup
     {

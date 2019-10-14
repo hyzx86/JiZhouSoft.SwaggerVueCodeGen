@@ -1,6 +1,6 @@
 using System;
 
-namespace JZSoft.AbpVueCodeGen.Mvc.Models
+namespace JiZhouSoft.SwaggerVueCodeGen.Models
 {
     public class ErrorViewModel
     {

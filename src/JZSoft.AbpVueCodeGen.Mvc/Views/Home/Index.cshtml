@@ -57,7 +57,7 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="GenCode" target="_blank" method="post" id="gencode">
+                <form action="CodeGen" target="_blank" method="post" id="gencode">
                     <div class="form-group">
                         <label for="TagName">TagName</label>
                         <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName">
@@ -107,7 +107,7 @@
 
         function getDef() {
 
-            $.get("@JZSoft.AbpVueCodeGen.Mvc.Controllers.HomeController.ApiJsonUrl", function (data) {
+            $.get("@JiZhouSoft.SwaggerVueCodeGen.Controllers.HomeController.ApiJsonUrl", function (data) {
                 swaggerJson = data;
                 for (var k in swaggerJson.definitions) {
                     var data = swaggerJson.definitions[k];
