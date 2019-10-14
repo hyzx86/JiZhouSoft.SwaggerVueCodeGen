@@ -1,0 +1,1 @@
+dotnet JZSoft.CodeGen.Mvc.dll

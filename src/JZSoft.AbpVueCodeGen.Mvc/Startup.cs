@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JZSoft.AbpVueCodeGen.Mvc.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            HomeController.ApiJsonUrl = Configuration.GetValue<string>("SwaggerApiJsonUrl");
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -40,7 +42,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc
                     .AllowCredentials();//指定处理cookie
 
                 });
-            }); 
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -57,7 +59,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseCors("any");
-            
+
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

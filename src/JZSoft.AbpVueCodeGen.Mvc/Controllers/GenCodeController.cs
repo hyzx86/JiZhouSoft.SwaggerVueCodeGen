@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 {
     public class GenCodeController : Controller
-    {
+    { 
         public IActionResult Index(string json)
         {
             if (string.IsNullOrEmpty(json))
