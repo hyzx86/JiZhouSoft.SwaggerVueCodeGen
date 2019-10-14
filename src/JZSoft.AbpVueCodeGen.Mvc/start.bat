@@ -1,1 +1,1 @@
-dotnet JZSoft.CodeGen.Mvc.dll --server.urls "http://*:7788"
+dotnet JZSoft.CodeGen.Mvc.dll --server.urls "http://localhost:8080"
