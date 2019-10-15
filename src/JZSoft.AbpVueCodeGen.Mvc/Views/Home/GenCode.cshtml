@@ -1,0 +1,501 @@
+﻿@using Newtonsoft.Json.Linq;
+@using JZSoft.AbpVueCodeGen.Models;
+@model JObject
+@{
+    Layout = null;
+    ViewData["Title"] = "Gen Code";
+}
+
+@if (Model != null)
+{
+    List<string> DefNames = new List<string>();
+    var tag = Model["tag"].ToString();
+    var apiServiceName = tag + "ServiceProxy";
+    DefNames.Add(apiServiceName);
+
+    var ListDtoName = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refName").ToString();
+    var ListItemDtoName = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refName").Value<string>();
+    var ListReturnPropertiesDef = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refData[1].value");
+
+    DefNames.Add(ListDtoName);
+    DefNames.Add(ListItemDtoName);
+
+
+    var SelectParams = Model["ListApi"]["parameters"];
+
+    var EnableCreate = Model["CreateApi"] != null;
+    var CreateDtoDef = !EnableCreate ? null : Model.SelectToken("$.CreateApi.parameters[0][3].value[0].value.refData[1].value");
+    var CreateDtoName = !EnableCreate ? null : Model.SelectToken("$.CreateApi.parameters[0][3].value[0].value.refName").ToString();
+    if (EnableCreate)
+    {
+        DefNames.Add(CreateDtoName);
+    }
+    var EnableUpdate = Model["UpdateApi"] != null;
+    var UpdateDtoDef = !EnableUpdate ? null : Model.SelectToken("$.UpdateApi.parameters[0][3].value[0].value.refData[1].value");
+    var UpdateDtoName = !EnableUpdate ? null : Model.SelectToken("$.UpdateApi.parameters[0][3].value[0].value.refName").ToString();
+    if (EnableUpdate) { DefNames.Add(UpdateDtoName); }
+
+
+    var ListApiName = Model["ListApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+    var CreateApiName = !EnableCreate ? null : Model["CreateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+    var UpdateApiName = !EnableUpdate ? null : Model["UpdateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+    var EnableDelete = Model["DeleteApi"] != null;
+    var DeleteApiName = !EnableDelete ? null : Model["DeleteApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+
+    <template>
+        <div class="app-container">
+            <div class="filter-container">
+                <el-form ref="listFilter" label-width="180px" :inline="true">
+                    @foreach (var item in SelectParams)
+                    {
+                        var pName = item.FirstOrDefault(o => o["key"].ToString() == "name")["value"].ToString();
+                        var lpName = pName.ToLowerStart();
+                        if ("skipCount,sorting,maxResultCount".Split(',').Contains(lpName))
+                        {
+                            continue;
+                        }
+                        var typeName = item.FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+                        var format = item.FirstOrDefault(o => o["key"].ToString() == "format") == null ?
+                            string.Empty :
+                            item.FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                        if (typeName == "string")
+                        {
+                            if (format == "date-time")
+                            {<text>
+                                    <el-form-item label="@pName">
+                                        <el-date-picker v-model="queryParams.@lpName"
+                                                        type="date" style="width: 200px;"
+                                                        class="filter-item"
+                                                        value-format="yyyy-MM-dd"
+                                                        @@keyup.enter.native="handleFilter"
+                                                        placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                <el-form-item label="@pName">
+                                    <el-input v-model="queryParams.@lpName"
+                                              placeholder="请输入关键字"
+                                              style="width: 200px;"
+                                              class="filter-item"
+                                              @@keyup.enter.native="handleFilter" />
+                                </el-form-item>
+                            </text>
+                        }
+                    }
+                    else
+if (typeName == "boolean")
+                    {
+                        <text>
+                            <el-form-item label="@pName">
+                                <el-checkbox v-model="queryParams.@lpName"
+                                             class="filter-item"
+                                             style="width: 200px;">@pName</el-checkbox>
+                                        </el-form-item>
+                        </text>
+                    }
+                    else if (typeName == "integer")
+                    {<text>
+                            <el-form-item label="@pName">
+                                <el-input v-model="queryParams.@lpName"
+                                          class="filter-item" style="width: 200px;"
+                                          type="number"
+                                          @@keyup.enter.native="handleFilter" />
+                            </el-form-item>
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        <el-form-item label="@pName">
+                            <el-input v-model="queryParams.@lpName"
+                                      placeholder="请输入关键字"
+                                      style="width: 200px;"
+                                      class="filter-item"
+                                      @@keyup.enter.native="handleFilter" />
+                        </el-form-item>
+                    </text>
+                }
+            }
+
+                    <el-form-item style="float:right;padding-right:50px;">
+                        <el-button v-waves
+                                   class="filter-item"
+                                   type="primary"
+                                   icon="el-icon-search"
+                                   @@click="handleFilter">{{ $t('table.search') }}</el-button>
+                    </el-form-item>
+                    @*<el-button class="filter-item"
+                   style="margin-left: 10px;"
+                   type="primary"
+                   icon="el-icon-edit"
+                   @@click="handleCreate">
+            {{ $t('table.add') }}
+        </el-button>
+        <el-button v-waves
+                   :loading="downloadLoading"
+                   class="filter-item"
+                   type="primary"
+                   icon="el-icon-download"
+                   @@click="handleDownload">
+            {{ $t('table.export') }}
+        </el-button>
+        <el-checkbox v-model="showReviewer"
+                     class="filter-item"
+                     style="margin-left:15px;"
+                     @@change="tableKey=tableKey+1">
+            {{ $t('table.reviewer') }}
+        </el-checkbox>*@
+</div>
+
+            <el-table :key="tableKey"
+                      v-loading="listLoading"
+                      :data="list"
+                      border
+                      fit
+                      highlight-current-row
+                      style="width: 100%;"
+                      @@sort-change="sortChange">
+                <el-table-column label="Id" prop="id"
+                                 sortable="custom" align="center" width="80px"
+                                 :class-name="getSortClass('id')">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.id }}</span>
+                    </template>
+                </el-table-column>
+                @foreach (JToken item in ListReturnPropertiesDef)
+                                                {
+                                                    var p = new PropertiesDef();
+//p.Name = item.FirstOrDefault(o => o["key"].ToString() == "name")["value"].ToString();
+p.Name = item["key"].ToString();
+p.TypeStr = item["value"].FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+                @await Html.PartialAsync("_list_ColDef", p)
+                                                }
+                <el-table-column :label="$t('table.actions')"
+                                 align="center"
+                                 width="230"
+                                 class-name="fixed-width">
+                    <template slot-scope="{row}">
+                        <el-button type="primary"
+                                   size="mini"
+                                   @@click="handleUpdate(row)">
+                            {{ $t('table.edit') }}
+                        </el-button>
+                        <el-button v-if="row.status!=='deleted'"
+                                   size="mini"
+                                   type="danger"
+                                   @@click="handleDelete(row,'deleted')">
+                            {{ $t('table.delete') }}
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <pagination v-show="total>0"
+                        :total="total"
+                        :page.sync="queryParams.page"
+                        :limit.sync="queryParams.maxResultCount"
+                        @@pagination="getList" />
+
+            <el-dialog :title="textMap[dialogStatus]"
+                       width="700px"
+                       :visible.sync="dialogFormVisible">
+                <el-form ref="dataForm"
+                         :rules="rules"
+                         :model="editModel"
+                         label-position="left"
+                         label-width="150px"
+                         style="width: 400px; margin-left:50px;">
+                    @if (EnableCreate || EnableUpdate)
+                    {
+                    <el-form-item label="ID" v-if="(editModel.id)?true:false" prop="id">
+                        <label>{{editModel.id}} </label>
+                    </el-form-item>
+                    @foreach (JToken item in ListReturnPropertiesDef)
+                    {
+                        var p = new PropertiesDef();
+                        p.Name = item["key"].ToString();
+                        p.TypeStr = item["value"].FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+                        @await Html.PartialAsync("_list_FrmItem", p)
+                    }
+                 }
+
+                </el-form>
+                <div slot="footer"
+                     class="dialog-footer">
+                    <el-button @@click="dialogFormVisible = false">
+                        {{ $t('table.cancel') }}
+                    </el-button>
+                    <el-button type="primary"
+                               @@click="dialogStatus==='create'?createData():updateData()">
+                        {{ $t('table.confirm') }}
+                    </el-button>
+                </div>
+            </el-dialog>
+
+            @*<el-dialog :visible.sync="dialogPageviewsVisible"
+                           title="Reading statistics">
+                    <el-table :data="pageviewsData"
+                              border
+                              fit
+                              highlight-current-row
+                              style="width: 100%">
+
+                        <el-table-column prop="key"
+                                         label="Channel" />
+                        <el-table-column prop="pageviews"
+                                         label="Pageviews" />
+                    </el-table>
+                    <span slot="footer"
+                          class="dialog-footer">
+                        <el-button type="primary"
+                                   @@click="dialogPageviewsVisible = false">{{ $t('table.confirm') }}</el-button>
+                    </span>
+                </el-dialog>*@
+        </div>
+    </template>
+
+    <script lang="ts">
+    import { Component, Vue } from 'vue-property-decorator'
+    import { Form } from 'element-ui'
+    //import { exportJson2Excel } from '@@/utils/excel'
+    import { formatJson } from '@@/utils'
+    import ajax from '@@/utils/request'
+    import Pagination from '@@/components/Pagination/index.vue'
+    import {@Html.Raw(string.Join(", ", DefNames.Distinct()) )  } from '@@/api/abp-service-proxies'
+
+        @@Component({
+            "name": '@tag.ToLowerStart()',
+            "components": {
+                Pagination
+            }
+        })
+        export default class extends Vue {
+            private tableKey = 0;
+            private list: @ListItemDtoName [] = [];
+            private total = 0;
+            private listLoading = true;
+
+            private queryParams = {
+                @foreach (var item in SelectParams)
+                {
+                    var pName = item.FirstOrDefault(o => o["key"].ToString() == "name")["value"].ToString();
+                    pName = pName.ToLowerStart();
+                    if (!"skipCount,sorting,maxResultCount".Split(',').Contains(pName) )
+                    {
+                        var typeName = item.FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+                        var format = item.FirstOrDefault(o => o["key"].ToString() == "format")==null?
+                            string.Empty:
+                            item.FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                        if (typeName == "string")
+                        {
+                            if (format == "date-time")
+                            {
+                                @Html.Raw(pName + ": new Date(),\r\n")
+                            }
+                            else
+                            {
+                                @Html.Raw(pName + ": '' ,\r\n")
+                            }
+                        }
+                        else {
+                            @Html.Raw(pName + ": null ,\r\n")
+                        }
+                    }
+                }
+                "skipCount": function() {
+                  return (this.page - 1) * this.maxResultCount;
+                },
+                "maxResultCount": 20,
+                "page": 1,
+                "sorting": "id"
+            };
+
+            private showReviewer = false;
+            private dialogFormVisible = false;
+            private dialogStatus = '';
+            private textMap = {
+                "update": 'Edit',
+                "create": 'Create'
+            };
+            private dialogPageviewsVisible = false;
+            private pageviewsData = [];
+            private rules = {
+                "type": [{ "required": true, "message": 'type is required', "trigger": 'change' }],
+                "timestamp": [
+                    { "required": true, "message": 'timestamp is required', "trigger": 'change' }
+                ],
+                "title": [{ "required": true, "message": 'title is required', "trigger": 'blur' }]
+            };
+            private downloadLoading = false;
+            private editModel: any = {};;
+
+            created() {
+                this.getList()
+            }
+
+            private async getList() {
+                this.listLoading = true
+                let qp = this.queryParams
+
+                const data = await this.abpService.@(ListApiName.ToLowerStart())(
+                    @{
+                        var paramsList = new List<string>();
+                    }
+                    @foreach (var item in SelectParams)
+                    {
+                        var p = item.FirstOrDefault(o => o["key"].ToString() == "name")["value"].ToString().ToLowerStart();
+                        if (p=="skipCount")
+                        {
+                        paramsList.Add($"this.queryParams." + p.ToLowerStart()+"()");
+                        }
+                        else
+                        {
+                        paramsList.Add($"this.queryParams." + p.ToLowerStart());
+                        }
+                    }
+                    @Html.Raw(string.Join(",\r\n                                        ", paramsList))
+                            )
+
+                this.list = data.items
+                this.total = data.totalCount
+                // Just to simulate the time of the request
+                setTimeout(() => {
+                    this.listLoading = false
+                }, 0.5 * 1000)
+            }
+
+            private handleFilter() {
+                this.getList()
+            }
+            @if(EnableDelete){
+            <text>
+            private handleDelete(row: any, status: string) {
+                this.abpService.@(DeleteApiName.ToLowerStart())(row.id)
+                this.getList()
+                this.$message({
+                    "message": '操作成功',
+                    "type": 'success'
+                })
+                row.status = status
+            }
+            </text>
+            }
+            private sortChange(data: any) {
+                const { prop, order } = data
+                if (prop === 'id') {
+                    this.sortByID(order)
+                }
+            }
+
+            private sortByID(order: string) {
+                if (order === 'ascending') {
+                    this.queryParams.sorting = 'id'
+                } else {
+                    this.queryParams.sorting = 'id desc'
+                }
+                this.handleFilter()
+            }
+
+            private getSortClass(key: string) {
+                const sort = this.queryParams.sorting
+                return sort === `${key}`
+                    ? 'ascending'
+                    : sort === `${key} desc`
+                        ? 'descending'
+                        : ''
+            }
+
+
+            private handleCreate() {
+
+     @if(EnableCreate) {
+            <text>
+                this.editModel = new @(CreateDtoName)()
+            </text>
+         }
+
+                this.dialogStatus = 'create'
+                this.dialogFormVisible = true
+                this.$nextTick(() => {
+                    (this.$refs['dataForm'] as Form).clearValidate()
+                })
+            }
+
+            private abpService = new  @(apiServiceName)(ajax);
+   @if(EnableCreate) {
+             <text>
+
+            private createData() {
+                (this.$refs['dataForm'] as Form).validate(async valid => {
+                    if (valid) {
+                        this.editModel.id = 0
+                        const data = await this.abpService.@(CreateApiName.ToLowerStart())(this.editModel as @CreateDtoName)
+                        //this.list.unshift(data)
+                        this.getList()
+                        this.dialogFormVisible = false
+
+                        this.$notify({
+                            "title": '成功',
+                            "message": '创建成功',
+                            "type": 'success',
+                            "duration": 2000
+                        })
+                    }
+                })
+            }
+        </text>
+}
+
+@if(EnableUpdate) {
+<text>
+
+  private handleUpdate(row: any) {
+        this.editModel = Object.assign({}, row)
+        this.dialogStatus = 'update'
+        this.dialogFormVisible = true
+        this.$nextTick(() => {
+            (this.$refs['dataForm'] as Form).clearValidate()
+        })
+    }
+
+  private updateData() {
+        (this.$refs['dataForm'] as Form).validate(async valid => {
+            if (valid) {
+                const editInput = Object.assign(new @(UpdateDtoName)(), this.editModel);
+                const data = await this.abpService.@(UpdateApiName.ToLowerStart())(editInput);
+                this.getList()
+                this.dialogFormVisible = false
+                this.$notify({
+                    "title": '成功',
+                    "message": '更新成功',
+                    "type": 'success',
+                    "duration": 2000
+                })
+            }
+        })
+    }
+</text>
+}
+  private handleDownload() {
+        this.downloadLoading = true
+        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
+        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const data = formatJson(filterVal, this.list)
+        exportJson2Excel(tHeader, data, 'table-list')
+        this.downloadLoading = false
+    }
+}
+    </script>
+}
+else
+{
+    <form action="GenCode" method="post">
+        Json :<br />
+        <textarea name="json"></textarea>
+        <button type="submit" class="btn btn-default navbar-btn">Submit</button>
+    </form>
+}
