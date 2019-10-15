@@ -1,11 +1,13 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-}  
+}
 <div class="row">
     <button type="button" id="btnSetJsonShow" class="btn btn-primary">
         设置Json
     </button>
 </div>
+筛选
+<input type="text" id="TagFilter" />
 <table class="table" id="tdTags">
     <thead>
         <tr>
@@ -53,11 +55,11 @@
                     &times;
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
-                    模态框（Modal）标题
+                    配置页面API
                 </h4>
             </div>
             <div class="modal-body">
-                <form action="CodeGen" target="_blank" method="post" id="gencode">
+                <form action="home/GenCode" target="_blank" method="post" id="gencode">
                     <div class="form-group">
                         <label for="TagName">TagName</label>
                         <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName">
@@ -107,7 +109,7 @@
 
         function getDef() {
 
-            $.get("@JiZhouSoft.SwaggerVueCodeGen.Controllers.HomeController.ApiJsonUrl", function (data) {
+            $.get("@JZSoft.AbpVueCodeGen.Mvc.Controllers.HomeController.ApiJsonUrl", function (data) {
                 swaggerJson = data;
                 for (var k in swaggerJson.definitions) {
                     var data = swaggerJson.definitions[k];
@@ -222,6 +224,20 @@
 
         $(function () {
             getDef()
+
+            $("#TagFilter").keypress(function () {
+                var row = $("#tdTags tbody tr")
+                var filterText=$(this).val().toLowerCase()
+                $(row).each(function (i,r) {
+                    if ($(r).find("td:eq(0)").text().toLowerCase().indexOf(filterText) == -1) {
+                        $(r).hide();
+                    } else {
+                        $(r).show();
+                    }
+                })
+
+            })
+
             $("#btnSetJson").click(function () {
                 $("#configModal").modal();
             })
@@ -231,6 +247,8 @@
                 var frm = $("form");
                 frm.find("#TagName").val(tag);
                 var allTags = [];
+
+                $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod").append("<option value='None'>None</option>");
                 apiList.forEach(function (item) {
                     if (item.tag == tag) {
                         $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod")

@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using JiZhouSoft.SwaggerVueCodeGen.Models; 
+using JZSoft.AbpVueCodeGen.Mvc.Models;
 using Newtonsoft.Json.Linq;
-namespace JiZhouSoft.SwaggerVueCodeGen.Controllers
+
+namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 {
     public class HomeController : Controller
     {
@@ -14,6 +15,12 @@ namespace JiZhouSoft.SwaggerVueCodeGen.Controllers
 
         public IActionResult Index()
         { 
+            return View();
+        } 
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Your application description page.";
+
             return View();
         }
         public IActionResult GenCode(string json)
@@ -26,13 +33,6 @@ namespace JiZhouSoft.SwaggerVueCodeGen.Controllers
             Response.ContentType = "text/plian;charset=utf-8";
             return View(jObject);
         }
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
