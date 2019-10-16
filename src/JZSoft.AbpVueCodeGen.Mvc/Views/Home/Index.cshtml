@@ -1,13 +1,12 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<div class="row">
-    <button type="button" id="btnSetJsonShow" class="btn btn-primary">
-        设置Json
-    </button>
+@model GenCodeConfigInput
+<br />
+<div class="row right">
+    筛选
+    <input type="text" id="TagFilter" />
 </div>
-筛选
-<input type="text" id="TagFilter" />
 <table class="table" id="tdTags">
     <thead>
         <tr>
@@ -21,35 +20,10 @@
     <tbody>
     </tbody>
 </table>
-<div class="modal fade" id="configJsonModal" tabindex="-1" role="dialog" aria-labelledby="Json Input">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel">
-                    配置代码生成
-                </h4>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="txtJsonInput" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    关闭
-                </button>
-                <button type="button" id="btnSubmit" class="btn btn-primary">
-                    提交更改
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+        <div class="modal-content" style="width: 800px;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;
@@ -62,31 +36,76 @@
                 <form action="home/GenCode" target="_blank" method="post" id="gencode">
                     <div class="form-group">
                         <label for="TagName">TagName</label>
-                        <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName">
+                        <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName" />
                     </div>
                     <div class="form-group">
                         <label for="ListMethod">ListMethod</label>
                         <select class="form-control" name="ListMethod" id="ListMethod">
                         </select>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListDtoName)
+                            @Html.EditorFor(o => o.ListDtoName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListItemsDtoName)
+                            @Html.EditorFor(o => o.ListItemsDtoName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListParamsJsonPath)
+                            @Html.EditorFor(o => o.ListParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListPropertiesJsonPath)
+                            @Html.EditorFor(o => o.ListPropertiesJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                        </div>
                     </div>
+
                     <div class="form-group">
                         <label for="CreateMethod">CreateMethod</label>
                         <select class="form-control" name="CreateMethod" id="CreateMethod">
                         </select>
-                    </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.CreateDtoName)
+                            @Html.EditorFor(o => o.CreateDtoName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.CreateParamsJsonPath)
+                            @Html.EditorFor(o => o.CreateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                        </div>
 
+
+                    </div>
                     <div class="form-group">
                         <label for="UpdateMethod">UpdateMethod</label>
                         <select class="form-control" name="UpdateMethod" id="UpdateMethod">
                         </select>
+
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.UpdateDtoName)
+                            @Html.EditorFor(o => o.UpdateDtoName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.UpdateParamsJsonPath)
+                            @Html.EditorFor(o => o.UpdateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                        </div>
+
                     </div>
 
                     <div class="form-group">
-                        <label for="DeleMethod">DeleMethod</label>
-                        <select class="form-control" name="DeleMethod" id="DeleMethod">
+                        <label for="DeleteMethod">DeleMethod</label>
+                        <select class="form-control" name="DeleteMethod" id="DeleteMethod">
                         </select>
+
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.DeleteApiJsonPath)
+                            @Html.EditorFor(o => o.DeleteApiJsonPath) <button type="button" class="btn btn-info tryJson">Try</button>
+                        </div>
                     </div>
-                    <input type="hidden" name="json" id="jsonData" />
+                    <div class="form-group">
+                        <label for="JsonData">JsonData</label>
+                        <textarea name="JsonData" id="JsonData" style="width:100%"></textarea>
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -100,195 +119,70 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
+
+<div class="modal fade" id="tryJson" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Json测试
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="TryGetProps">
+                    <div class="form-group">
+                        <label for="ApiPath">ApiPath</label>
+                        <input type="text" name="ApiPath" id="TryApiPath" style="width:100%" />
+                        <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="tryJsonData">JsonData</label>
+                        <textarea type="hidden" name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="Result">Result</label>
+                        <textarea type="hidden" name="Result" id="Result" style="width:100%"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
 @section Scripts{
-
     <script>
-        var swaggerJson = {};
-        var definitions = [];
-        var apiList = [];
-
-        function getDef() {
-
-            $.get("@JZSoft.AbpVueCodeGen.Mvc.Controllers.HomeController.ApiJsonUrl", function (data) {
-                swaggerJson = data;
-                for (var k in swaggerJson.definitions) {
-                    var data = swaggerJson.definitions[k];
-                        definitions.push({ key: k, value: fillKeyValue(data) })
-                }
-                console.log(definitions)
-
-                for (var path in swaggerJson.paths) {
-                    var api = swaggerJson.paths[path]
-                    var apiDef = { path };
-                    for (var name in api) {
-                        apiDef.method = name;
-                    }
-                    var method = api[apiDef.method]
-                    apiDef.tag = method.tags.join()
-                    apiDef.responses = fillKeyValue(method.responses)
-                    apiDef.parameters = fillKeyValue(method.parameters)
-                    apiList.push(apiDef);
-                }
-                console.log(apiList);
-                getData()
-            });
-        }
-
-        var simpleTypes = ["boolean", "number", "bigint", "string"]
-        function isComplexData(data) {
-            if (data === undefined || data === null) {
-                return false;
-            } else if (simpleTypes.indexOf(typeof data) != -1) {
-                return false;
-            } else {
-                return true;
-            }
-
-        }
-        function fillKeyValue(data) {
-            var props = []
-            if (data instanceof Array) {
-                for (var i = 0; i < data.length; i++) {
-                    var item = fillKeyValue(data[i]);
-                    props.push(item)
-                }
-            }
-            else if (isComplexData(data)) {
-                for (var key in data) {
-                    var objValue = {};
-                    if (key == "$ref") {
-                        var refPath = data[key];
-                        refPath = refPath.split('/').last();
-                        var refData = swaggerJson.definitions[refPath];
-                        objValue.refName = refPath;
-                        objValue.refData = fillKeyValue(refData);
-                    } else {
-                        objValue = fillKeyValue(data[key]);
-                    }
-                    var p = { key, value: objValue }
-                    props.push(p);
-                }
-            } else {
-                return data
-            }
-            return props;
-        }
-
-        function fillRef(data) {
-            for (var key in data) {
-                if (data.hasOwnProperty(key) && data[key]) {
-                    if (key == "$ref") {
-                        var refPath = data[key];
-                        refPath = refPath.split('/').last();
-                        var refData = swaggerJson.definitions[refPath];
-                        data.refName = refPath;
-                        data.refData = refData;
-                    } else if (typeof data[key] == "object") {
-                        data[key] = fillRef(data[key]);
-                    }
-                }
-
-                if (data.hasOwnProperty("parameters")) {
-                    for (var parameterName in data.parameters) {
-                        data.parameters.push({ name: parameterName, data: data.parameters[parameterName] })
-                    }
-                }
-
-                if (data.hasOwnProperty("required")) {
-                    for (var pName in data.properties) {
-                        data.name = pName;
-                        if (data.required.join(',').indexOf(pName) != -1) {
-                            data.properties[pName].isRequired = true;
-                        } else {
-                            data.properties[pName].isRequired = false;
-                        }
-                    }
-                }
-            }
-            return data;
-        }
-
-        function getData() {
-            $("#tdTags tbody").empty();
-            apiList.forEach(function (method) {
-                $("#tdTags tbody").append('<tr><td><a href="javascript:void(0);" class="show_config"  data-tag="' + method.tag
-                    + '">' + method.tag + '</a></td>'
-                    + '<td>' + method.path + '</td>'
-                    + '<td>' + method.method + '</td>'
-                    + '<td></td>'
-                    + '<td> </td>'
-                    + '</tr>'
-                )
-            })
-        }
-
         $(function () {
-            getDef()
-
-            $("#TagFilter").keypress(function () {
-                var row = $("#tdTags tbody tr")
-                var filterText=$(this).val().toLowerCase()
-                $(row).each(function (i,r) {
-                    if ($(r).find("td:eq(0)").text().toLowerCase().indexOf(filterText) == -1) {
-                        $(r).hide();
-                    } else {
-                        $(r).show();
-                    }
-                })
-
+            var apiUrl = "@JZSoft.AbpVueCodeGen.Mvc.Controllers.HomeController.ApiJsonUrl";
+            getDef(apiUrl);
+            bindPage();
+            $(".tryJson").click(function (){
+                $("#tryJsonData").val($("#JsonData").val());
+                var path = $(this).parent().find("input").val()
+                $("#TryApiPath").val(path);
+                tryGetProp(path,true);
             })
-
-            $("#btnSetJson").click(function () {
-                $("#configModal").modal();
-            })
-            $("#tdTags tbody").on("click", ".show_config", function () {
-                var tag = $(this).attr("data-tag");
-                $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod").empty()
-                var frm = $("form");
-                frm.find("#TagName").val(tag);
-                var allTags = [];
-
-                $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod").append("<option value='None'>None</option>");
-                apiList.forEach(function (item) {
-                    if (item.tag == tag) {
-                        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod")
-                            .append("<option value='" + item.path + "'>" + item.path + "</option>");
-                        allTags.push(item);
-                    }
-                })
-                allTags.forEach(function (it) {
-                    var p = it.path.toLowerCase().split('/').last();
-                    if (p.indexOf("getall") > -1) {
-                        $("#ListMethod").val(it.path);
-                    } else if (p.indexOf("create") != -1) {
-                        $("#CreateMethod").val(it.path);
-                    } else if (p.indexOf("update") != -1) {
-                        $("#UpdateMethod").val(it.path);
-                    } else if (p.indexOf("delete") != -1) {
-                        $("#DeleMethod").val(it.path);
-                    }
-
-                });
-                $("#configModal").modal();
+            $("#btnTryGetProp").click(function () {
+                var path = $(this).parent().find("input").val();
+                tryGetProp(path,false)
             });
-            $(".container #btnSubmit").click(function () {
-                var frm = $("#gencode");
-                var apiConfig = {
-                    tag: $("#TagName").val(),
-                    ListApi: apiList.find(o => o.path == $("#ListMethod").val()),
-                    CreateApi: apiList.find(o => o.path == $("#CreateMethod").val()),
-                    UpdateApi: apiList.find(o => o.path == $("#UpdateMethod").val()),
-                    DeleteApi: apiList.find(o => o.path == $("#DeleMethod").val())
-                }
-                $("#jsonData").val(JSON.stringify(apiConfig))
-                console.log($("#jsonData").val())
-                frm.submit();
-
-            })
         })
-        Array.prototype.last = function () {
-            var len = this.length
-            return this[len - 1];
+        function tryGetProp(path,modal) {
+              var json = JSON.parse($("#tryJsonData").val());
+                $.post('/home/TryGetProps',{ Json: JSON.stringify( json), JsonPath: path }, function (data) {
+                   $("#Result").val(JSON.stringify(data));
+                    console.log(data);
+                    if (modal) {
+                        $("#tryJson").modal();
+                    }
+                });
         }
     </script>
 }

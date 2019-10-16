@@ -1,12 +1,12 @@
-﻿@using JZSoft.AbpVueCodeGen.Models;
-@model PropertiesDef
+﻿@model ParamDef
 @if (Model.Name != "id")
-{
-    <el-table-column label="@Model.Name" prop="@Model.Name"
+{    
+    var lName = Model.Name.ToLowerStart();
+    <el-table-column label="@Html.Raw(Model.Name)" prop="@Html.Raw(lName)"
                      sortable="custom" align="center" 
-                     :class-name="getSortClass('@Model.Name')">
+                     :class-name="getSortClass('@Html.Raw(lName)')">
         <template slot-scope="scope">
-            <span>{{ scope.row.@Model.Name }}</span>
+            <span>{{ scope.row.@Html.Raw(lName) }}</span>
         </template>
     </el-table-column>
 }
