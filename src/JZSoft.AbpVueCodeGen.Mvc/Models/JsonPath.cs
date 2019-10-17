@@ -18,6 +18,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Models
         ListItem,
         QueryParamsDef,
         QueryParamsQueryCode,
+        QueryParamsDwonloadCode,
         FormItems
     }
 }

@@ -10,7 +10,19 @@
                      sortable="custom" align="center" 
                      :class-name="getSortClass('@Html.Raw(lName)')">
         <template slot-scope="scope">
-            <span>{{ scope.row.@Html.Raw(lName) }}</span>
+            @if (Model.Type == "enum")
+            {
+                <span>{{   @(Html.Raw(lName))Options.find(o=>o.value==scope.row.@Html.Raw(lName)).label }}</span>
+            }
+            else if (Model.Type == "date-time")
+            {
+                <span>{{ moment(scope.row.@Html.Raw(lName),'YYYY-MM-DD')  }}</span>
+            }
+            else
+            {
+                <span>{{ scope.row.@Html.Raw(lName) }}</span>
+            }
+
         </template>
     </el-table-column>
 }

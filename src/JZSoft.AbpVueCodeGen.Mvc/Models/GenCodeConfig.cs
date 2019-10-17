@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace JZSoft.AbpVueCodeGen.Mvc.Models
 {
-   
+
 
     public class GenCodeConfigInput
     {
@@ -35,7 +35,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Models
     {
         public string ListResultDtoName { get; set; }
         public string ListResultDtoItemName { get; set; }
-        public string JsMethodName { get; set; } 
+        public string JsMethodName { get; set; }
         public List<ParamDef> Properties { get; set; } = new List<ParamDef>();
         public List<ParamDef> Parameters { get; set; } = new List<ParamDef>();
     }
@@ -56,6 +56,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Models
         public string Name { get; set; }
         public string Type { get; set; }
         public string Format { get; set; }
+        public Dictionary<string, string> EnumDef = new Dictionary<string, string>();
     }
 
 }

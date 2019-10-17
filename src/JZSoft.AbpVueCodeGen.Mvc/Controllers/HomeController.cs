@@ -35,7 +35,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
         {
             Response.ContentType = "text/plian;charset=utf-8";
             try
-            { 
+            {
                 var result = GetPartResult(input);
                 return View("~/Views/Home/GetPartCode.cshtml", result);
             }
@@ -90,7 +90,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 
             var result = new PartCodeResult
             {
-                TemplateName=input.TemplateName,
+                TemplateName = input.TemplateName,
                 Properties = paramDefList,
                 ErrorCount = ErrorCount
             };
@@ -296,11 +296,51 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
         private static void GetProperties(JToken item, ParamDef paramDef)
         {
             paramDef.Name = item["key"].ToString();
-            paramDef.Type = item["value"].FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
-            if (item["value"].Any(o => o["key"].ToString() == "format"))
+            if (item["value"].Count() != 0)
             {
-                paramDef.Format = item["value"].FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                if (item["value"].Any(o => o["key"].ToString() == "type"))
+                    paramDef.Type = item["value"].FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+                if (item["value"].Any(o => o["key"].ToString() == "format"))
+                {
+                    paramDef.Format = item["value"].FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                    if (paramDef.Format == "date-time")
+                    {
+                        paramDef.Type = paramDef.Format;
+                    }
+                }
+                if (item["value"].Any(o => o["key"].ToString() == "$ref"))
+                {
+                    var refData = item["value"].SelectToken("[0].value.refData");
+                    if (refData != null)
+                    {
+                        if (refData.Count() > 1)
+                        {
+                            if (refData.Any(o => o["key"].ToString() == "enum")
+                                &&
+                                refData.Any(o => o["key"].ToString() == "x-enumNames")
+                                )
+                            {
+                                var enumNames = refData.FirstOrDefault(o => o["key"].ToString() == "x-enumNames")["value"];
+                                var enumValues = refData.FirstOrDefault(o => o["key"].ToString() == "enum")["value"];
+                                Dictionary<string, string> EnumDef = new Dictionary<string, string>();
+                                for (int i = 0; i < enumValues.Count(); i++)
+                                {
+                                    if (EnumDef.Keys.Contains(enumNames[i].ToString()))
+                                    {
+                                        EnumDef.Add(enumNames[i].ToString(), enumValues[i].ToString());
+                                    }
+                                }
+                                paramDef.EnumDef = EnumDef;
+                                paramDef.Type = "enum";
+                            }
+
+                        }
+                    }
+                }
             }
+
+
+
         }
         private static void GetParemeters(JToken itemInput, ParamDef paramDef)
         {
@@ -314,6 +354,10 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             if (itemInput.Any(o => o["key"].ToString() == "format"))
             {
                 paramDef.Format = itemInput.FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                if (paramDef.Format == "date-time")
+                {
+                    paramDef.Type = paramDef.Format;
+                }
             }
         }
 

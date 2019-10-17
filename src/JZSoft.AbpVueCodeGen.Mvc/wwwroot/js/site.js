@@ -36,7 +36,7 @@ var simpleTypes = ["boolean", "number", "bigint", "string"]
 function isComplexData(data) {
     if (data === undefined || data === null) {
         return false;
-    } else if (simpleTypes.indexOf(typeof data) != -1) {
+    } else if (simpleTypes.indexOf(typeof data) !== -1) {
         return false;
     } else {
         return true;
@@ -162,7 +162,7 @@ function bindPage() {
                 $("#ListMethod").val(it.path);
             } else if (p.indexOf("create") !== -1) {
                 $("#CreateMethod").val(it.path);
-            } else if (p.indexOf("update") !== -1) {
+            } else if (p.indexOf("update") !== -1 || p.indexOf("edit") !== -1) {
                 $("#UpdateMethod").val(it.path);
             } else if (p.indexOf("delete") !== -1) {
                 $("#DeleteMethod").val(it.path);
@@ -247,6 +247,7 @@ function getConfig(tag) {
 }
 
 function tryGetProp(path, modal, templateName) {
+
     var json = JSON.parse($("#tryJsonData").val());
     if (!templateName) {
         templateName = 'Json';

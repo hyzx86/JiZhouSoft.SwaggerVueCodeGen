@@ -1,10 +1,7 @@
-﻿
-@{
+﻿@{
     Layout = null;
-
 }
 @model PartCodeResult
-
 @if (Model.TemplateName == TemplateType.QueryParamsDef)
 {
     foreach (var item in Model.Properties)
@@ -41,6 +38,19 @@ else if (Model.TemplateName == TemplateType.QueryParamsQueryCode)
             paramsList.Add($"this.queryParams." + p.ToLowerStart() + "()");
         }
         else
+        {
+            paramsList.Add($"this.queryParams." + p.ToLowerStart());
+        }
+    }
+    @Html.Raw(string.Join(",\r\n                                        ", paramsList))
+}
+else if (Model.TemplateName == TemplateType.QueryParamsDwonloadCode)
+{
+    var paramsList = new List<string>();
+    @foreach (var item in Model.Properties)
+    {
+        var p = item.Name.ToLowerStart();
+        if (!"skipCount,sorting,maxResultCount".Split(',').Contains(p)) 
         {
             paramsList.Add($"this.queryParams." + p.ToLowerStart());
         }

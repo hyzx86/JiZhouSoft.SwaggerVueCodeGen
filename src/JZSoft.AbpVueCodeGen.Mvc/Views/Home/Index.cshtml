@@ -48,14 +48,14 @@
 
                             @Html.LabelFor(o => o.ListItemsDtoName)
                             @Html.EditorFor(o => o.ListItemsDtoName)
-                        </div> 
+                        </div>
                         <div class="form-group">
                             @Html.LabelFor(o => o.ListParamsJsonPath)
                             <input type="text" value="ListApi.parameters" id="ListParamsJsonPath" name="ListParamsJsonPath" />
-                            <button type="button" class="btn btn-info tryJson">Try</button>
+                            <button type="button" data-target="ListParamsJsonPath" class="btn btn-info tryJson">Try</button>
                             @Html.LabelFor(o => o.ListPropertiesJsonPath)
                             <input type="text" value="ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refData[1].value" id="ListPropertiesJsonPath" name="ListPropertiesJsonPath" />
-                            <button type="button" class="btn btn-info tryJson">Try</button>
+                            <button type="button" data-target="ListPropertiesJsonPath" class="btn btn-info tryJson">Try</button>
                         </div>
                     </div>
 
@@ -67,11 +67,11 @@
                             @Html.LabelFor(o => o.CreateDtoName)
                             @Html.EditorFor(o => o.CreateDtoName)
 
-                            @Html.LabelFor(o => o.CreateParamsJsonPath) 
+                            @Html.LabelFor(o => o.CreateParamsJsonPath)
                             <input type="text" value="CreateApi.parameters[0][3].value[0].value.refData[1].value" id="CreateParamsJsonPath" name="CreateParamsJsonPath" />
-                            <button type="button" class="btn btn-info tryJson">Try</button>
+                            <button type="button" data-target="CreateParamsJsonPath" class="btn btn-info tryJson">Try</button>
 
-                        </div> 
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="UpdateMethod">UpdateMethod</label>
@@ -81,10 +81,10 @@
                         <div class="form-group">
                             @Html.LabelFor(o => o.UpdateDtoName)
                             @Html.EditorFor(o => o.UpdateDtoName)
-                            @Html.LabelFor(o => o.UpdateParamsJsonPath)  
+                            @Html.LabelFor(o => o.UpdateParamsJsonPath)
                             <input type="text" value="UpdateApi.parameters[0][3].value[0].value.refData[1].value" id="UpdateParamsJsonPath" name="UpdateParamsJsonPath" />
-                            <button type="button" class="btn btn-info tryJson">Try</button>
-                        </div> 
+                            <button type="button" data-target="UpdateParamsJsonPath" class="btn btn-info tryJson">Try</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -94,7 +94,7 @@
 
                         <div class="form-group">
                             @Html.LabelFor(o => o.DeleteApiJsonPath)
-                            @Html.EditorFor(o => o.DeleteApiJsonPath)  
+                            @Html.EditorFor(o => o.DeleteApiJsonPath)
                         </div>
                     </div>
                     <div class="form-group">
@@ -135,7 +135,7 @@
                     </div>
                     <div class="form-group">
                         <label for="tryJsonData">JsonData</label>
-                        <textarea   name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
+                        <textarea name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
                     </div>
                     <div class="form-group">
                         <label>Target</label>:
@@ -149,12 +149,12 @@
                         <input type="radio" name="TemplateName" id="radQueryParamsDef" value="QueryParamsDef" />
                         <label for="radQueryParamsDef">QueryParamsDef</label>
                         <input type="radio" name="TemplateName" id="radQueryParamsQueryCode" value="QueryParamsQueryCode" />
-                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label> 
+                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label>
                         <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
                     </div>
                     <div class="form-group">
                         <label for="Result">Result</label>
-                        <textarea  name="Result" id="Result" style="width:100%"></textarea>
+                        <textarea name="Result" id="Result" style="width:100%"></textarea>
                     </div>
                 </form>
             </div>
@@ -175,17 +175,19 @@
             bindPage();
             $(".tryJson").click(function (){
                 $("#tryJsonData").val($("#JsonData").val());
-                var path = $(this).parent().find("input").val()
+                //var path = $(this).parent().find("input").val()
+                var path = $("#" + $(this).attr("data-target")).val();
                 $("#TryApiPath").val(path);
                 tryGetProp(path,true);
             })
             $("#btnTryGetProp").click(function () {
-                var path = $("#TryGetProps #TryApiPath").val(); 
+               var path=  $("#TryApiPath").val();
+                console.log(path); 
                 var templateName = $("#TryGetProps input[type=radio]:checked").val();
                 tryGetProp(path,false,templateName)
             });
         })
-     
-         
+
+
     </script>
 }

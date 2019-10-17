@@ -33,8 +33,16 @@ else
             case "integer":
                 <el-input type="number" v-model='editModel.@Html.Raw(lName)' />
                 break;
+            case "enum":
+                    <el-select v-model="editModel.@Html.Raw(lName)"  placeholder="请选择">
+                        <el-option v-for="item in @(Html.Raw(lName))Options"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                    </el-select>
+                break;
             default:
-
                 <!--复杂属性，请自己实现    @Model.Type-->
                 <el-input type="text" v-model='editModel.@Html.Raw(lName)' />
                 break;
