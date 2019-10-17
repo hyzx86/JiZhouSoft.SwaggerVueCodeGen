@@ -439,14 +439,14 @@
     }
 </text>
 }
-  private handleDownload() {
+  private async handleDownload() {
         this.downloadLoading = true
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = formatJson(filterVal, this.list)
+        //const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
+        //const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        //const data = formatJson(filterVal, this.list)
         //exportJson2Excel(tHeader, data, 'table-list')
        //this.downloadLoading = false
-        const resultfile = await this.abpService.@(Model.ListApi.JsMethodName.ToLowerStart())(
+        const resultfile = await this.abpService.get@(Model.ListApi.JsMethodName.ToUpperStart())ToExcel(
                         @await Html.PartialAsync("GetPartCode", new PartCodeResult
                             {
                                               Properties = Model.ListApi.Parameters,
@@ -454,15 +454,10 @@
                             })
                     )
       
-        util.downloadTempFile(file)
+        util.downloadTempFile(resultfile)
     }
 }
-        </script>
-
-
-
-
-
+        </script> 
     }
     else
     {
