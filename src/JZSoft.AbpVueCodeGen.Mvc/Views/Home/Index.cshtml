@@ -140,11 +140,26 @@
                     </div>
                     <div class="form-group">
                         <label for="tryJsonData">JsonData</label>
-                        <textarea type="hidden" name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
+                        <textarea   name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Target</label>:
+
+                        <input type="radio" id="radJson" name="TemplateName" value="Json" checked="checked" />
+                        <label for="radJson">Json</label> 
+                        <input type="radio" name="TemplateName" id="radListItem" value="ListItem" />
+                        <label for="radListItem">ListItems</label> 
+                        <input type="radio" name="TemplateName" id="radFormItems" value="FormItems" />
+                        <label for="radFormItems">FormItems</label>
+                        <input type="radio" name="TemplateName"  id="radQueryParamsDef"value="QueryParamsDef" />
+                        <label for="radQueryParamsDef">QueryParamsDef</label>
+                        <input type="radio" name="TemplateName" id="radQueryParamsQueryCode" value="QueryParamsQueryCode" />
+                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label>
+
                     </div>
                     <div class="form-group">
                         <label for="Result">Result</label>
-                        <textarea type="hidden" name="Result" id="Result" style="width:100%"></textarea>
+                        <textarea  name="Result" id="Result" style="width:100%"></textarea>
                     </div>
                 </form>
             </div>
@@ -170,19 +185,12 @@
                 tryGetProp(path,true);
             })
             $("#btnTryGetProp").click(function () {
-                var path = $(this).parent().find("input").val();
-                tryGetProp(path,false)
+                var path = $(this).parent().find("input").val(); 
+                var templateName = $("#TryGetProps input[type=radio]:checked").val();
+                tryGetProp(path,false,templateName)
             });
         })
-        function tryGetProp(path,modal) {
-              var json = JSON.parse($("#tryJsonData").val());
-                $.post('/home/TryGetProps',{ Json: JSON.stringify( json), JsonPath: path }, function (data) {
-                   $("#Result").val(JSON.stringify(data));
-                    console.log(data);
-                    if (modal) {
-                        $("#tryJson").modal();
-                    }
-                });
-        }
+     
+         
     </script>
 }

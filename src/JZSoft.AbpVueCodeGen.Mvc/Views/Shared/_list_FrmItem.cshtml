@@ -7,9 +7,10 @@
     </el-form-item>*@
 }
 else
-{
+{   
+    Model.Name = Model.Name.ToUpperStart();
     var lName = Model.Name.ToLowerStart();
-    <el-form-item label="@Html.Raw(Model.Name)" prop="@Html.Raw(lName)">
+    <el-form-item :label="L('@Html.Raw(Model.Name)')" prop="@Html.Raw(lName)">
         @switch (Model.Type)
         {
             case "string":
@@ -24,6 +25,9 @@ else
                 {
                     <el-input v-model='editModel.@Html.Raw(lName)' />
                 }
+                break;
+            case "boolean":
+                <el-checkbox v-model="editModel.@Html.Raw(lName)"></el-checkbox> 
                 break;
             case "number":
             case "integer":

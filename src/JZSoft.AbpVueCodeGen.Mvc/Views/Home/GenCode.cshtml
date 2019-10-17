@@ -25,228 +25,235 @@
                 </text>
                 }
             }
-                </script>
-        </text>
-    }
+            </script>
+            </text>
+        }
 
 
 
 
 
 
-    <template>
-        <div class="app-container">
-            <div class="filter-container">
-                <el-form ref="listFilter" label-width="180px" :inline="true">
-                    @foreach (var item in Model.ListApi.Parameters)
-                    {
-                        var pName = item.Name;
-                        var lpName = pName.ToLowerStart();
-                        if ("skipCount,sorting,maxResultCount".Split(',').Contains(lpName))
+        <template>
+            <div class="app-container">
+                <div class="filter-container">
+                    <el-form ref="listFilter" label-width="180px" :inline="true">
+                        @foreach (var item in Model.ListApi.Parameters)
                         {
-                            continue;
-                        }
+                            var pName = item.Name;
+                            var lpName = pName.ToLowerStart();
+                            if ("skipCount,sorting,maxResultCount".Split(',').Contains(lpName))
+                            {
+                                continue;
+                            }
 
-                        if (item.Type == "string")
-                        {
-                            if (item.Format == "date-time")
-                            {<text>
-                                    <el-form-item label="@pName">
-                                        <el-date-picker v-model="queryParams.@lpName"
-                                                        type="date" style="width: 200px;"
-                                                        class="filter-item"
-                                                        value-format="yyyy-MM-dd"
-                                                        @@keyup.enter.native="handleFilter"
-                                                        placeholder="选择日期">
-                                        </el-date-picker>
+                            if (item.Type == "string")
+                            {
+                                if (item.Format == "date-time")
+                                {<text>
+                                        <el-form-item label="@pName">
+                                            <el-date-picker v-model="queryParams.@lpName"
+                                                            type="date" style="width: 200px;"
+                                                            class="filter-item"
+                                                            value-format="yyyy-MM-dd"
+                                                            @@keyup.enter.native="handleFilter"
+                                                            placeholder="选择日期">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                </text>
+                            }
+                            else
+                            {
+                                <text>
+                                    <el-form-item label="@Html.Raw(pName)">
+                                        <el-input v-model="queryParams.@Html.Raw(lpName)"
+                                                  placeholder="请输入关键字"
+                                                  style="width: 200px;"
+                                                  class="filter-item"
+                                                  @@keyup.enter.native="handleFilter" />
                                     </el-form-item>
-                            </text>
+                                </text>
+                            }
                         }
-                        else
+                        else if (item.Type == "boolean")
                         {
                             <text>
                                 <el-form-item label="@Html.Raw(pName)">
-                                    <el-input v-model="queryParams.@Html.Raw(lpName)"
-                                              placeholder="请输入关键字"
-                                              style="width: 200px;"
-                                              class="filter-item"
-                                              @@keyup.enter.native="handleFilter" />
-                                </el-form-item>
+                                    <el-checkbox v-model="queryParams.@Html.Raw(lpName)"
+                                                 class="filter-item"
+                                                 style="width: 200px;">@Html.Raw(pName)</el-checkbox>
+                                            </el-form-item>
                             </text>
                         }
+                        else if (item.Type == "integer")
+                        {<text>
+                                <el-form-item label="@Html.Raw(pName)">
+                                    <el-input v-model="queryParams.@Html.Raw(lpName)"
+                                              class="filter-item" style="width: 200px;"
+                                              type="number"
+                                              @@keyup.enter.native="handleFilter" />
+                                </el-form-item>
+                        </text>
                     }
-                    else if (item.Type == "boolean")
+                    else
                     {
                         <text>
                             <el-form-item label="@Html.Raw(pName)">
-                                <el-checkbox v-model="queryParams.@Html.Raw(lpName)"
-                                             class="filter-item"
-                                             style="width: 200px;">@Html.Raw(pName)</el-checkbox>
-                                        </el-form-item>
-                        </text>
-                    }
-                    else if (item.Type == "integer")
-                    {<text>
-                            <el-form-item label="@Html.Raw(pName)">
                                 <el-input v-model="queryParams.@Html.Raw(lpName)"
-                                          class="filter-item" style="width: 200px;"
-                                          type="number"
+                                          placeholder="请输入关键字"
+                                          style="width: 200px;"
+                                          class="filter-item"
                                           @@keyup.enter.native="handleFilter" />
                             </el-form-item>
-                    </text>
+                        </text>
+                    }
                 }
-                else
-                {
-                    <text>
-                        <el-form-item label="@Html.Raw(pName)">
-                            <el-input v-model="queryParams.@Html.Raw(lpName)"
-                                      placeholder="请输入关键字"
-                                      style="width: 200px;"
-                                      class="filter-item"
-                                      @@keyup.enter.native="handleFilter" />
-                        </el-form-item>
-                    </text>
-                }
-            }
 
-                    <el-form-item style="float:right;padding-right:50px;">
+                        <el-form-item style="float:right;padding-right:50px;">
+                            <el-button v-waves
+                                       class="filter-item"
+                                       type="primary"
+                                       icon="el-icon-search"
+                                       @@click="handleFilter">{{ $t('table.search') }}</el-button>
+                        </el-form-item>
+                    </el-form>
+                    @*<el-button class="filter-item"
+                                   style="margin-left: 10px;"
+                                   type="primary"
+                                   icon="el-icon-edit"
+                                   @@click="handleCreate">
+                            {{ $t('table.add') }}
+                        </el-button>
                         <el-button v-waves
+                                   :loading="downloadLoading"
                                    class="filter-item"
                                    type="primary"
-                                   icon="el-icon-search"
-                                   @@click="handleFilter">{{ $t('table.search') }}</el-button>
-                    </el-form-item>
-                </el-form>
-                @*<el-button class="filter-item"
-                               style="margin-left: 10px;"
-                               type="primary"
-                               icon="el-icon-edit"
-                               @@click="handleCreate">
-                        {{ $t('table.add') }}
-                    </el-button>
-                    <el-button v-waves
-                               :loading="downloadLoading"
-                               class="filter-item"
-                               type="primary"
-                               icon="el-icon-download"
-                               @@click="handleDownload">
-                        {{ $t('table.export') }}
-                    </el-button>
-                    <el-checkbox v-model="showReviewer"
-                                 class="filter-item"
-                                 style="margin-left:15px;"
-                                 @@change="tableKey=tableKey+1">
-                        {{ $t('table.reviewer') }}
-                    </el-checkbox>*@
-            </div>
-
-            <el-table :key="tableKey"
-                      v-loading="listLoading"
-                      :data="list"
-                      border
-                      fit
-                      highlight-current-row
-                      style="width: 100%;"
-                      @@sort-change="sortChange">
-                <el-table-column label="Id" prop="id"
-                                 sortable="custom" align="center" width="80px"
-                                 :class-name="getSortClass('id')">
-                    <template slot-scope="scope">
-                        <span>{{ scope.row.id }}</span>
-                    </template>
-                </el-table-column>
-
-                @foreach (var item in Model.ListApi.Properties)
-                {
-                    @await Html.PartialAsync("_list_ColDef", item)
-                }
-                <el-table-column :label="$t('table.actions')"
-                                 align="center"
-                                 width="230"
-                                 class-name="fixed-width">
-                    <template slot-scope="{row}">
-                        <el-button type="primary"
-                                   size="mini"
-                                   @@click="handleUpdate(row)">
-                            {{ $t('table.edit') }}
+                                   icon="el-icon-download"
+                                   @@click="handleDownload">
+                            {{ $t('table.export') }}
                         </el-button>
-                        <el-button v-if="row.status!=='deleted'"
-                                   size="mini"
-                                   type="danger"
-                                   @@click="handleDelete(row,'deleted')">
-                            {{ $t('table.delete') }}
-                        </el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-
-            <pagination v-show="total>0"
-                        :total="total"
-                        :page.sync="queryParams.page"
-                        :limit.sync="queryParams.maxResultCount"
-                        @@pagination="getList" />
-
-            <el-dialog :title="textMap[dialogStatus]"
-                       width="700px"
-                       :visible.sync="dialogFormVisible">
-                <el-form ref="dataForm"
-                         :rules="rules"
-                         :model="editModel"
-                         label-position="left"
-                         label-width="150px"
-                         style="width: 400px; margin-left:50px;">
-                    @if (Model.UpdateApi != null || Model.CreateApi != null)
-                    {
-                        <el-form-item label="ID" v-if="(editModel.id)?true:false" prop="id">
-                            <label>{{editModel.id}} </label>
-                        </el-form-item>
-                        @foreach (var item in Model.UpdateApi.Properties)
-                        {
-                            @await Html.PartialAsync("_list_FrmItem", item)
-                        }
-                    }
-
-                </el-form>
-                <div slot="footer"
-                     class="dialog-footer">
-                    <el-button @@click="dialogFormVisible = false">
-                        {{ $t('table.cancel') }}
-                    </el-button>
-                    <el-button type="primary"
-                               @@click="dialogStatus==='create'?createData():updateData()">
-                        {{ $t('table.confirm') }}
-                    </el-button>
+                        <el-checkbox v-model="showReviewer"
+                                     class="filter-item"
+                                     style="margin-left:15px;"
+                                     @@change="tableKey=tableKey+1">
+                            {{ $t('table.reviewer') }}
+                        </el-checkbox>*@
                 </div>
-            </el-dialog>
 
-            @*<el-dialog :visible.sync="dialogPageviewsVisible"
-                           title="Reading statistics">
-                    <el-table :data="pageviewsData"
-                              border
-                              fit
-                              highlight-current-row
-                              style="width: 100%">
+                <el-table :key="tableKey"
+                          v-loading="listLoading"
+                          :data="list"
+                          border
+                          fit
+                          highlight-current-row
+                          style="width: 100%;"
+                          @@sort-change="sortChange">
+                    <el-table-column label="Id" prop="id"
+                                     sortable="custom" align="center" width="80px"
+                                     :class-name="getSortClass('id')">
+                        <template slot-scope="scope">
+                            <span>{{ scope.row.id }}</span>
+                        </template>
+                    </el-table-column>
 
-                        <el-table-column prop="key"
-                                         label="Channel" />
-                        <el-table-column prop="pageviews"
-                                         label="Pageviews" />
-                    </el-table>
-                    <span slot="footer"
-                          class="dialog-footer">
+                    @*@foreach (var item in Model.ListApi.Properties)
+                        {
+                            @await Html.PartialAsync("_list_ColDef", item)
+                        }*@
+                    @await Html.PartialAsync("GetPartCode", new PartCodeResult
+                    {
+                                                   Properties = Model.ListApi.Properties,
+                                                   TemplateName = TemplateType.ListItem
+                    })
+                    <el-table-column :label="$t('table.actions')"
+                                     align="center"
+                                     width="230"
+                                     class-name="fixed-width">
+                        <template slot-scope="{row}">
+                            <el-button type="primary"
+                                       size="mini"
+                                       @@click="handleUpdate(row)">
+                                {{ $t('table.edit') }}
+                            </el-button>
+                            <el-button v-if="row.status!=='deleted'"
+                                       size="mini"
+                                       type="danger"
+                                       @@click="handleDelete(row,'deleted')">
+                                {{ $t('table.delete') }}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <pagination v-show="total>0"
+                            :total="total"
+                            :page.sync="queryParams.page"
+                            :limit.sync="queryParams.maxResultCount"
+                            @@pagination="getList" />
+
+                <el-dialog :title="textMap[dialogStatus]"
+                           width="700px"
+                           :visible.sync="dialogFormVisible">
+                    <el-form ref="dataForm"
+                             :rules="rules"
+                             :model="editModel"
+                             label-position="left"
+                             label-width="150px"
+                             style="width: 400px; margin-left:50px;">
+
+
+
+                        @if (Model.UpdateApi != null || Model.CreateApi != null)
+                        {
+                            @await Html.PartialAsync("GetPartCode", new PartCodeResult
+                            {
+                                              Properties = Model.ListApi.Properties,
+                                              TemplateName = TemplateType.FormItems
+                            })
+                        }
+
+                    </el-form>
+                    <div slot="footer"
+                         class="dialog-footer">
+                        <el-button @@click="dialogFormVisible = false">
+                            {{ $t('table.cancel') }}
+                        </el-button>
                         <el-button type="primary"
-                                   @@click="dialogPageviewsVisible = false">{{ $t('table.confirm') }}</el-button>
-                    </span>
-                </el-dialog>*@
-        </div>
-    </template>
+                                   @@click="dialogStatus==='create'?createData():updateData()">
+                            {{ $t('table.confirm') }}
+                        </el-button>
+                    </div>
+                </el-dialog>
 
-    <script lang="ts">
+                @*<el-dialog :visible.sync="dialogPageviewsVisible"
+                               title="Reading statistics">
+                        <el-table :data="pageviewsData"
+                                  border
+                                  fit
+                                  highlight-current-row
+                                  style="width: 100%">
+
+                            <el-table-column prop="key"
+                                             label="Channel" />
+                            <el-table-column prop="pageviews"
+                                             label="Pageviews" />
+                        </el-table>
+                        <span slot="footer"
+                              class="dialog-footer">
+                            <el-button type="primary"
+                                       @@click="dialogPageviewsVisible = false">{{ $t('table.confirm') }}</el-button>
+                        </span>
+                    </el-dialog>*@
+            </div>
+        </template>
+
+        <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator'
     import { Form } from 'element-ui'
     //import { exportJson2Excel } from '@@/utils/excel'
     import { formatJson } from '@@/utils'
     import ajax from '@@/utils/request'
+    import AbpBase from '@@/lib/abpbase'
     import Pagination from '@@/components/Pagination/index.vue'
     import {@Html.Raw(string.Join(", ", Model.ImportClassNames.Distinct()) )  } from '@@/api/abp-service-proxies'
 
@@ -256,34 +263,18 @@
                 Pagination
             }
         })
-        export default class extends Vue {
+        export default class @Model.Tag.ToLowerStart() extends AbpBase {
             private tableKey = 0;
             private list: @Model.ListApi.ListResultDtoItemName [] = [];
             private total = 0;
             private listLoading = true;
 
             private queryParams = {
-                @foreach (var item in Model.ListApi.Parameters)
-                {
-                   var pName = item.Name.ToLowerStart();
-                    if (!"skipCount,sorting,maxResultCount".Split(',').Contains(pName) )
-                    {
-                        if (item.Type == "string")
-                        {
-                            if (item.Format == "date-time")
+                @await Html.PartialAsync("GetPartCode", new PartCodeResult
                             {
-                                @Html.Raw(pName + ": null,\r\n")
-                            }
-                            else
-                            {
-                                @Html.Raw(pName + ": '' ,\r\n")
-                            }
-                        }
-                        else {
-                            @Html.Raw(pName + ": null ,\r\n")
-                        }
-                    }
-                }
+                                Properties = Model.ListApi.Parameters,
+                                TemplateName = TemplateType.QueryParamsDef
+                            })
                 "skipCount": function() {
                   return (this.page - 1) * this.maxResultCount;
                 },
@@ -320,23 +311,11 @@
                 let qp = this.queryParams
 
                 const data = await this.abpService.@(Model.ListApi.JsMethodName.ToLowerStart())(
-                    @{
-                        var paramsList = new List<string>();
-                    }
-                    @foreach (var item in Model.ListApi.Parameters)
-                    {
-                        var p = item.Name.ToLowerStart();
-                        if (p=="skipCount")
-                        {
-                        paramsList.Add($"this.queryParams." + p.ToLowerStart()+"()");
-                        }
-                        else
-                        {
-                        paramsList.Add($"this.queryParams." + p.ToLowerStart());
-                        }
-                    }
-                    @Html.Raw(string.Join(",\r\n                                        ", paramsList))
-                            )
+                        @await Html.PartialAsync("GetPartCode", new PartCodeResult
+                            {
+                                              Properties = Model.ListApi.Parameters,
+                                              TemplateName = TemplateType.QueryParamsQueryCode
+                            })
 
                 this.list = data.items
                 this.total = data.totalCount
@@ -463,22 +442,22 @@
         const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
         const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
         const data = formatJson(filterVal, this.list)
-        exportJson2Excel(tHeader, data, 'table-list')
+        //exportJson2Excel(tHeader, data, 'table-list')
         this.downloadLoading = false
     }
 }
-    </script>
+        </script>
 
 
 
 
 
-}
-else
-{
-    <form action="GenCode" method="post">
-        Json :<br />
-        <textarea name="json"></textarea>
-        <button type="submit" class="btn btn-default navbar-btn">Submit</button>
-    </form>
-}
+    }
+    else
+    {
+        <form action="GenCode" method="post">
+            Json :<br />
+            <textarea name="json"></textarea>
+            <button type="submit" class="btn btn-default navbar-btn">Submit</button>
+        </form>
+    }

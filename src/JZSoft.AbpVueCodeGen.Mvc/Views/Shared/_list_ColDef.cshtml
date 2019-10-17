@@ -1,8 +1,12 @@
 ﻿@model ParamDef
-@if (Model.Name != "id")
-{    
+@{
+    var skipNames = "tenantId,id";
+}
+@if (!skipNames.Split(',').Contains( Model.Name))
+{
+    Model.Name = Model.Name.ToUpperStart();
     var lName = Model.Name.ToLowerStart();
-    <el-table-column label="@Html.Raw(Model.Name)" prop="@Html.Raw(lName)"
+    <el-table-column :label="L('@Html.Raw(Model.Name)')" prop="@Html.Raw(lName)"
                      sortable="custom" align="center" 
                      :class-name="getSortClass('@Html.Raw(lName)')">
         <template slot-scope="scope">

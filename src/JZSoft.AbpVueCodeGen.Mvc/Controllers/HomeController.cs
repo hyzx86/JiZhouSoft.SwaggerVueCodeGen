@@ -30,28 +30,25 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 throw new Exception("JsonPath Error");
             }
         }
+
+        public IActionResult GetPartCode(PartCodeInnput input)
+        {
+            Response.ContentType = "text/plian;charset=utf-8";
+            try
+            {
+                var result = GetPartResult(input);
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("JsonPath Error"+ ex.Message);
+            }
+        }
         public JsonResult TryGetProps(JsonPathInput input)
         {
             try
             {
-                JToken token = JToken.Parse(input.Json);
-                var paramDefList = new List<ParamDef>();
-                var ErrorCount = 0;
-                foreach (var item in token.SelectToken(input.JsonPath))
-                {
-                    try
-                    {
-                        var def = new ParamDef();
-                        GetProperties(item, def);
-                        paramDefList.Add(def);
-                    }
-                    catch { ErrorCount++; }
-                }
-                var result = new
-                {
-                    ParamList = paramDefList,
-                    ErrorCount
-                };
+                PartCodeResult result = GetPartResult(input);
                 return new JsonResult(result);
             }
             catch (Exception)
@@ -59,6 +56,30 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 return new JsonResult("Convert Error");
             }
         }
+
+        private static PartCodeResult GetPartResult(JsonPathInput input)
+        {
+            JToken token = JToken.Parse(input.Json);
+            var paramDefList = new List<ParamDef>();
+            var ErrorCount = 0;
+            foreach (var item in token.SelectToken(input.JsonPath))
+            {
+                try
+                {
+                    var def = new ParamDef();
+                    GetProperties(item, def);
+                    paramDefList.Add(def);
+                }
+                catch { ErrorCount++; }
+            }
+            var result = new PartCodeResult
+            {
+                Properties = paramDefList,
+                ErrorCount = ErrorCount
+            };
+            return result;
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -101,7 +122,11 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             {
                 listApi.ListResultDtoName = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refName").ToString();
             }
-            var ListApiName = Model["ListApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+            var ListApiName = Model.SelectToken("$.ListApi.path").ToString();
+            if (!string.IsNullOrEmpty(ListApiName))
+            {
+                ListApiName = ListApiName.Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+            }
             listApi.JsMethodName = ListApiName;
             dtoNames.Add(listApi.ListResultDtoName);
             genCodeConfig.ListApi = listApi;
@@ -193,7 +218,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                     }
                     createApi.Properties.Add(paramDef);
                 }
-                var CreateApiName = Model["CreateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+                var CreateApiName = Model["CreateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
                 createApi.JsMethodName = CreateApiName.ToLowerStart();
                 dtoNames.Add(createApi.RequestDtoName);
                 genCodeConfig.CreateApi = createApi;
@@ -241,7 +266,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             if (EnableDelete)
             {
                 Deleteapi deleteapi = new Deleteapi();
-                var DeleteApiName = Model["DeleteApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
+                var DeleteApiName = Model["DeleteApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
                 deleteapi.JsMethodName = DeleteApiName.ToLowerStart();
                 genCodeConfig.DeleteApi = deleteapi;
             }

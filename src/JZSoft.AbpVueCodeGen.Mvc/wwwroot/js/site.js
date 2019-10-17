@@ -169,7 +169,7 @@ function bindPage() {
             }
 
         });
-        
+
         $("#configModal").modal();
         var config = getConfig(tag);
         if (config)
@@ -218,9 +218,9 @@ function bindPage() {
         $("#JsonData").val(JSON.stringify(apiConfig));
     }
 }
- 
+
 function JsonPath(json, path) {
-    $.post('/home/TestJsonPath',{ Json: JSON.stringify( json), JsonPath: path }, function (data) {
+    $.post('/home/TestJsonPath', { Json: JSON.stringify(json), JsonPath: path }, function (data) {
         alert(JSON.stringify(data));
         console.log(data);
     });
@@ -230,19 +230,42 @@ Array.prototype.last = function () {
     return this[len - 1];
 }
 
-    function updateConfig(tag, configData) {
-        var savedConfig = getConfig(tag)
-        if (!savedConfig) {
-            savedConfig = {}
-        }
-        savedConfig[tag] =configData ;
-        localStorage.setItem("ConfigData", JSON.stringify(savedConfig));
+function updateConfig(tag, configData) {
+    var savedConfig = getConfig(tag)
+    if (!savedConfig) {
+        savedConfig = {}
     }
-    function getConfig(tag) {
+    savedConfig[tag] = configData;
+    localStorage.setItem("ConfigData", JSON.stringify(savedConfig));
+}
+function getConfig(tag) { 
+    var savedConfig = localStorage.getItem("ConfigData");
+    if (savedConfig == 'null') {
+        return {};
+    }
+    return JSON.parse(savedConfig)[tag];
+}
 
-        var savedConfig = localStorage.getItem("ConfigData");
-        if (savedConfig=='null') {
-            return {};
-        } 
-        return JSON.parse(savedConfig)[tag];
+function tryGetProp(path, modal, templateName) {
+    var json = JSON.parse($("#tryJsonData").val());
+    if (!templateName) {
+        templateName = 'Json'
     }
+ 
+    if (modal) {
+        $("#tryJson").modal();
+    }
+    if (templateName == "Json") {
+        $.post('/home/TryGetProps', { Json: JSON.stringify(json), JsonPath: path }, function (data) { 
+            console.log(data);
+            $("#Result").val(JSON.stringify(  data));
+        });
+    } else {
+        var jsonStr = $("#tryJsonData").val()
+        $.post('/home/GetPartCode', { Json: jsonStr, JsonPath: path, templateName: templateName }, function (data) { 
+            console.log(data); 
+            $("#Result").val(data);
+        });
+    }
+
+}
