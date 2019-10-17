@@ -5,19 +5,17 @@ using System.Threading.Tasks;
 
 namespace JZSoft.AbpVueCodeGen.Mvc.Models
 {
-    public class JsonPathInput
-    {
-        public string Json { get; set; }
-        public string JsonPath { get; set; }
-    }
-    public class PartCodeInnput : JsonPathInput
+    public class PartCodeInnput
     {
         public TemplateType TemplateName { get; set; }
+        public string Json { get; set; }
+        public string JsonPath { get; set; }
     }
 
     public enum TemplateType
     {
-        ListItem, 
+        Json,
+        ListItem,
         QueryParamsDef,
         QueryParamsQueryCode,
         FormItems

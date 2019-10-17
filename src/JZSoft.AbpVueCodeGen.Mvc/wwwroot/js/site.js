@@ -238,9 +238,9 @@ function updateConfig(tag, configData) {
     savedConfig[tag] = configData;
     localStorage.setItem("ConfigData", JSON.stringify(savedConfig));
 }
-function getConfig(tag) { 
+function getConfig(tag) {
     var savedConfig = localStorage.getItem("ConfigData");
-    if (savedConfig==null||savedConfig === 'null') {
+    if (savedConfig === null || savedConfig === 'null') {
         return {};
     }
     return JSON.parse(savedConfig)[tag];
@@ -251,19 +251,19 @@ function tryGetProp(path, modal, templateName) {
     if (!templateName) {
         templateName = 'Json';
     }
- 
+
     if (modal) {
         $("#tryJson").modal();
     }
-    if (templateName == "Json") {
-        $.post('/home/TryGetProps', { Json: JSON.stringify(json), JsonPath: path }, function (data) { 
+    if (templateName === "Json") {
+        $.post('/home/TryGetProps', { Json: JSON.stringify(json), JsonPath: path, templateName: 'Json' }, function (data) {
             console.log(data);
-            $("#Result").val(JSON.stringify(  data));
+            $("#Result").val(JSON.stringify(data));
         });
     } else {
-        var jsonStr = $("#tryJsonData").val()
-        $.post('/home/GetPartCode', { Json: jsonStr, JsonPath: path, templateName: templateName }, function (data) { 
-            console.log(data); 
+        var jsonStr = $("#tryJsonData").val();
+        $.post('/home/GetPartCode', { Json: jsonStr, JsonPath: path, templateName: templateName }, function (data) {
+            console.log(data);
             $("#Result").val(data);
         });
     }

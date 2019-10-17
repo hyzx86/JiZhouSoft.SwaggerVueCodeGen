@@ -18,7 +18,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             return View();
         }
         [HttpPost]
-        public JsonResult TestJsonPath(JsonPathInput input)
+        public JsonResult TestJsonPath(PartCodeInnput input)
         {
             try
             {
@@ -35,16 +35,16 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
         {
             Response.ContentType = "text/plian;charset=utf-8";
             try
-            {
-                var result = GetPartResult(input);
-                return View(result);
+            { 
+                var result = GetPartResult( input);
+                return View("~/Views/Home/GetPartCode.cshtml", result);
             }
             catch (Exception ex)
             {
-                throw new Exception("JsonPath Error"+ ex.Message);
+                throw new Exception("JsonPath Error" + ex.Message);
             }
         }
-        public JsonResult TryGetProps(JsonPathInput input)
+        public JsonResult TryGetProps(PartCodeInnput input)
         {
             try
             {
@@ -56,24 +56,41 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 return new JsonResult("Convert Error");
             }
         }
-
-        private static PartCodeResult GetPartResult(JsonPathInput input)
+        private static PartCodeResult GetPartResult(PartCodeInnput input)
         {
             JToken token = JToken.Parse(input.Json);
             var paramDefList = new List<ParamDef>();
             var ErrorCount = 0;
-            foreach (var item in token.SelectToken(input.JsonPath))
+            if (input.TemplateName == TemplateType.QueryParamsDef || input.TemplateName == TemplateType.QueryParamsQueryCode)
             {
-                try
+                foreach (var item in token.SelectToken(input.JsonPath))
                 {
-                    var def = new ParamDef();
-                    GetProperties(item, def);
-                    paramDefList.Add(def);
+                    try
+                    {
+                        var def = new ParamDef();
+                        GetParemeters(item, def);
+                        paramDefList.Add(def);
+                    }
+                    catch { ErrorCount++; }
                 }
-                catch { ErrorCount++; }
             }
+            else
+            {
+                foreach (var item in token.SelectToken(input.JsonPath))
+                {
+                    try
+                    {
+                        var def = new ParamDef();
+                        GetProperties(item, def);
+                        paramDefList.Add(def);
+                    }
+                    catch { ErrorCount++; }
+                }
+            }
+
             var result = new PartCodeResult
             {
+                TemplateName=input.TemplateName,
                 Properties = paramDefList,
                 ErrorCount = ErrorCount
             };
@@ -176,7 +193,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 ParamDef paramDef = new ParamDef();
                 try
                 {
-                    GetProperties(item, paramDef);
+                    GetParemeters(item, paramDef);
                 }
                 catch
                 {
@@ -285,6 +302,21 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 paramDef.Format = item["value"].FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
             }
         }
+        private static void GetParemeters(JToken itemInput, ParamDef paramDef)
+        {
+            var item = itemInput.FirstOrDefault(o => o["key"].ToString() == "name");
+            paramDef.Name = item["value"].ToString();
+            if (itemInput.Any(o => o["key"].ToString() == "type"))
+            {
+                paramDef.Type = itemInput.FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
+
+            }
+            if (itemInput.Any(o => o["key"].ToString() == "format"))
+            {
+                paramDef.Format = itemInput.FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+            }
+        }
+
 
         private void PushDict(Dictionary<string, List<string>> dict, string key, string value)
         {
