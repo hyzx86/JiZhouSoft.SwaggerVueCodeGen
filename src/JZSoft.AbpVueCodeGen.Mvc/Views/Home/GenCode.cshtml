@@ -109,13 +109,26 @@
                     }
                 }
 
-                        <el-form-item style="float:right;padding-right:50px;">
-                            <el-button v-waves
-                                       class="filter-item"
-                                       type="primary"
-                                       icon="el-icon-search"
-                                       @@click="handleFilter">{{ $t('table.search') }}</el-button>
-                        </el-form-item>
+                    <el-form-item style="float:right;padding-right:50px;">
+
+                        <el-button class="filter-item"
+                                   style="margin-left: 10px;"
+                                   type="primary"
+                                   icon="el-icon-edit"
+                                   @@click="handleCreate">{{ $t('table.add') }}</el-button>
+
+                        <el-button v-waves
+                                   class="filter-item"
+                                   type="primary"
+                                   icon="el-icon-search"
+                                   @@click="handleFilter">{{ $t('table.search') }}</el-button>
+                        <el-button v-waves
+                                   :loading="downloadLoading"
+                                   class="filter-item"
+                                   type="primary"
+                                   icon="el-icon-download"
+                                   @@click="handleDownload">{{ $t('table.export') }}</el-button>
+                    </el-form-item>
                     </el-form>
                     @*<el-button class="filter-item"
                                    style="margin-left: 10px;"
@@ -162,8 +175,8 @@
                         }*@
                     @await Html.PartialAsync("GetPartCode", new PartCodeResult
                     {
-                                                   Properties = Model.ListApi.Properties,
-                                                   TemplateName = TemplateType.ListItem
+                            Properties = Model.ListApi.Properties,
+                            TemplateName = TemplateType.ListItem
                     })
                     <el-table-column :label="$t('table.actions')"
                                      align="center"
@@ -249,13 +262,12 @@
 
         <script lang="ts">
     import { Component, Vue } from 'vue-property-decorator'
-    import { Form } from 'element-ui' 
-    import { formatJson }  from '@@/utils' 
+    import { Form } from 'element-ui'
+    import { formatJson }  from '@@/utils'
     // import { exportJson2Excel } from '@@/utils/excel'
     import AbpBase from "@@/lib/abpbase";
     import util from '@@/lib/util';
     import ajax from '@@/utils/request'
-    import AbpBase from '@@/lib/abpbase'
     import Pagination from '@@/components/Pagination/index.vue'
     import {@Html.Raw(string.Join(", ", Model.ImportClassNames.Distinct()) )  } from '@@/api/abp-service-proxies'
 
@@ -446,14 +458,14 @@
         //const data = formatJson(filterVal, this.list)
         //exportJson2Excel(tHeader, data, 'table-list')
        //this.downloadLoading = false
-        const resultfile = await this.abpService.get@(Model.ListApi.JsMethodName.ToUpperStart())ToExcel(
+        const resultfile = await this.abpService.get@(Model.Tag.ToUpperStart())ToExcel(
                         @await Html.PartialAsync("GetPartCode", new PartCodeResult
                             {
                                               Properties = Model.ListApi.Parameters,
                                               TemplateName = TemplateType.QueryParamsQueryCode
                             })
                     )
-      
+
         util.downloadTempFile(resultfile)
     }
 }
