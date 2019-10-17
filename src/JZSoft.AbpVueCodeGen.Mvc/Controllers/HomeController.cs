@@ -36,7 +36,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             Response.ContentType = "text/plian;charset=utf-8";
             try
             { 
-                var result = GetPartResult( input);
+                var result = GetPartResult(input);
                 return View("~/Views/Home/GetPartCode.cshtml", result);
             }
             catch (Exception ex)
@@ -200,7 +200,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                     PushDict(ErrorDict, "SelectParams", item.ToString());
                     continue;
                 }
-                genCodeConfig.ListApi.Properties.Add(paramDef);
+                genCodeConfig.ListApi.Parameters.Add(paramDef);
             }
 
             #endregion
