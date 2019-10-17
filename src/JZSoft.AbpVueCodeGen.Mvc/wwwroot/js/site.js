@@ -240,7 +240,7 @@ function updateConfig(tag, configData) {
 }
 function getConfig(tag) { 
     var savedConfig = localStorage.getItem("ConfigData");
-    if (savedConfig == 'null') {
+    if (savedConfig==null||savedConfig === 'null') {
         return {};
     }
     return JSON.parse(savedConfig)[tag];
@@ -249,7 +249,7 @@ function getConfig(tag) {
 function tryGetProp(path, modal, templateName) {
     var json = JSON.parse($("#tryJsonData").val());
     if (!templateName) {
-        templateName = 'Json'
+        templateName = 'Json';
     }
  
     if (modal) {
