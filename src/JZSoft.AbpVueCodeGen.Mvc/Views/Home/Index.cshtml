@@ -23,7 +23,7 @@
 
 <div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
-        <div class="modal-content" style="width: 800px;">
+        <div class="modal-content" style="width: 900px;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;
@@ -45,16 +45,13 @@
                         <div class="form-group">
                             @Html.LabelFor(o => o.ListDtoName)
                             @Html.EditorFor(o => o.ListDtoName)
-                        </div>
-                        <div class="form-group">
+
                             @Html.LabelFor(o => o.ListItemsDtoName)
                             @Html.EditorFor(o => o.ListItemsDtoName)
-                        </div>
+                        </div> 
                         <div class="form-group">
                             @Html.LabelFor(o => o.ListParamsJsonPath)
                             @Html.EditorFor(o => o.ListParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
-                        </div>
-                        <div class="form-group">
                             @Html.LabelFor(o => o.ListPropertiesJsonPath)
                             @Html.EditorFor(o => o.ListPropertiesJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
                         </div>
@@ -67,13 +64,11 @@
                         <div class="form-group">
                             @Html.LabelFor(o => o.CreateDtoName)
                             @Html.EditorFor(o => o.CreateDtoName)
-                        </div>
-                        <div class="form-group">
+
                             @Html.LabelFor(o => o.CreateParamsJsonPath)
                             @Html.EditorFor(o => o.CreateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
-                        </div>
 
-
+                        </div> 
                     </div>
                     <div class="form-group">
                         <label for="UpdateMethod">UpdateMethod</label>
@@ -83,12 +78,9 @@
                         <div class="form-group">
                             @Html.LabelFor(o => o.UpdateDtoName)
                             @Html.EditorFor(o => o.UpdateDtoName)
-                        </div>
-                        <div class="form-group">
                             @Html.LabelFor(o => o.UpdateParamsJsonPath)
-                            @Html.EditorFor(o => o.UpdateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
-                        </div>
-
+                            @Html.EditorFor(o => o.UpdateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button> 
+                        </div> 
                     </div>
 
                     <div class="form-group">
@@ -122,7 +114,7 @@
 
 <div class="modal fade" id="tryJson" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
-        <div class="modal-content" style="width: 800px;">
+        <div class="modal-content" style="width: 900px;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;
@@ -136,7 +128,6 @@
                     <div class="form-group">
                         <label for="ApiPath">ApiPath</label>
                         <input type="text" name="ApiPath" id="TryApiPath" style="width:100%" />
-                        <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
                     </div>
                     <div class="form-group">
                         <label for="tryJsonData">JsonData</label>
@@ -146,16 +137,16 @@
                         <label>Target</label>:
 
                         <input type="radio" id="radJson" name="TemplateName" value="Json" checked="checked" />
-                        <label for="radJson">Json</label> 
+                        <label for="radJson">Json</label>
                         <input type="radio" name="TemplateName" id="radListItem" value="ListItem" />
-                        <label for="radListItem">ListItems</label> 
+                        <label for="radListItem">ListItems</label>
                         <input type="radio" name="TemplateName" id="radFormItems" value="FormItems" />
                         <label for="radFormItems">FormItems</label>
-                        <input type="radio" name="TemplateName"  id="radQueryParamsDef"value="QueryParamsDef" />
+                        <input type="radio" name="TemplateName" id="radQueryParamsDef" value="QueryParamsDef" />
                         <label for="radQueryParamsDef">QueryParamsDef</label>
                         <input type="radio" name="TemplateName" id="radQueryParamsQueryCode" value="QueryParamsQueryCode" />
-                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label>
-
+                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label> 
+                        <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
                     </div>
                     <div class="form-group">
                         <label for="Result">Result</label>
@@ -185,7 +176,7 @@
                 tryGetProp(path,true);
             })
             $("#btnTryGetProp").click(function () {
-                var path = $(this).parent().find("input").val(); 
+                var path = $("#TryGetProps #TryApiPath").val(); 
                 var templateName = $("#TryGetProps input[type=radio]:checked").val();
                 tryGetProp(path,false,templateName)
             });
