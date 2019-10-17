@@ -51,9 +51,11 @@
                         </div> 
                         <div class="form-group">
                             @Html.LabelFor(o => o.ListParamsJsonPath)
-                            @Html.EditorFor(o => o.ListParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                            <input type="text" value="ListApi.parameters" id="ListParamsJsonPath" name="ListParamsJsonPath" />
+                            <button type="button" class="btn btn-info tryJson">Try</button>
                             @Html.LabelFor(o => o.ListPropertiesJsonPath)
-                            @Html.EditorFor(o => o.ListPropertiesJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                            <input type="text" value="ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refData[1].value" id="ListPropertiesJsonPath" name="ListPropertiesJsonPath" />
+                            <button type="button" class="btn btn-info tryJson">Try</button>
                         </div>
                     </div>
 
@@ -65,8 +67,9 @@
                             @Html.LabelFor(o => o.CreateDtoName)
                             @Html.EditorFor(o => o.CreateDtoName)
 
-                            @Html.LabelFor(o => o.CreateParamsJsonPath)
-                            @Html.EditorFor(o => o.CreateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button>
+                            @Html.LabelFor(o => o.CreateParamsJsonPath) 
+                            <input type="text" value="CreateApi.parameters[0][3].value[0].value.refData[1].value" id="CreateParamsJsonPath" name="CreateParamsJsonPath" />
+                            <button type="button" class="btn btn-info tryJson">Try</button>
 
                         </div> 
                     </div>
@@ -78,8 +81,9 @@
                         <div class="form-group">
                             @Html.LabelFor(o => o.UpdateDtoName)
                             @Html.EditorFor(o => o.UpdateDtoName)
-                            @Html.LabelFor(o => o.UpdateParamsJsonPath)
-                            @Html.EditorFor(o => o.UpdateParamsJsonPath)<button type="button" class="btn btn-info tryJson">Try</button> 
+                            @Html.LabelFor(o => o.UpdateParamsJsonPath)  
+                            <input type="text" value="UpdateApi.parameters[0][3].value[0].value.refData[1].value" id="UpdateParamsJsonPath" name="UpdateParamsJsonPath" />
+                            <button type="button" class="btn btn-info tryJson">Try</button>
                         </div> 
                     </div>
 
@@ -90,7 +94,7 @@
 
                         <div class="form-group">
                             @Html.LabelFor(o => o.DeleteApiJsonPath)
-                            @Html.EditorFor(o => o.DeleteApiJsonPath) <button type="button" class="btn btn-info tryJson">Try</button>
+                            @Html.EditorFor(o => o.DeleteApiJsonPath)  
                         </div>
                     </div>
                     <div class="form-group">
