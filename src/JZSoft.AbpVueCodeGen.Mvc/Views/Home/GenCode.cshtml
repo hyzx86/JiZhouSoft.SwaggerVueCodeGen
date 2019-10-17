@@ -7,7 +7,7 @@
 
 @if (Model != null)
 {
-    var ErrorDict = (ViewBag.ErrorDict as Dictionary<string, List<string>>);
+    @*var ErrorDict = (ViewBag.ErrorDict as Dictionary<string, List<string>>);
     if (ErrorDict.Keys.Count != 0)
     {
         <text>
@@ -27,7 +27,7 @@
             }
             </script>
             </text>
-        }
+        }*@
 
 
 
@@ -251,7 +251,7 @@
     import { Component, Vue } from 'vue-property-decorator'
     import { Form } from 'element-ui'
     //import { exportJson2Excel } from '@@/utils/excel'
-    import { formatJson } from '@@/utils'
+    import { formatJson },util from '@@/utils'
     import ajax from '@@/utils/request'
     import AbpBase from '@@/lib/abpbase'
     import Pagination from '@@/components/Pagination/index.vue'
@@ -316,7 +316,7 @@
                                               Properties = Model.ListApi.Parameters,
                                               TemplateName = TemplateType.QueryParamsQueryCode
                             })
-
+                    )
                 this.list = data.items
                 this.total = data.totalCount
                 // Just to simulate the time of the request
@@ -443,7 +443,16 @@
         const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
         const data = formatJson(filterVal, this.list)
         //exportJson2Excel(tHeader, data, 'table-list')
-        this.downloadLoading = false
+       //this.downloadLoading = false
+        const resultfile = await this.abpService.@(Model.ListApi.JsMethodName.ToLowerStart())(
+                        @await Html.PartialAsync("GetPartCode", new PartCodeResult
+                            {
+                                              Properties = Model.ListApi.Parameters,
+                                              TemplateName = TemplateType.QueryParamsQueryCode
+                            })
+                    )
+      
+        util.downloadTempFile(file)
     }
 }
         </script>
