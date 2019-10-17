@@ -54,7 +54,7 @@ function fillKeyValue(data) {
     else if (isComplexData(data)) {
         for (var key in data) {
             var objValue = {};
-            if (key == "$ref") {
+            if (key === "$ref") {
                 var refPath = data[key];
                 refPath = refPath.split('/').last();
                 var refData = swaggerJson.definitions[refPath];
@@ -75,13 +75,13 @@ function fillKeyValue(data) {
 function fillRef(data) {
     for (var key in data) {
         if (data.hasOwnProperty(key) && data[key]) {
-            if (key == "$ref") {
+            if (key === "$ref") {
                 var refPath = data[key];
                 refPath = refPath.split('/').last();
                 var refData = swaggerJson.definitions[refPath];
                 data.refName = refPath;
                 data.refData = refData;
-            } else if (typeof data[key] == "object") {
+            } else if (typeof data[key] === "object") {
                 data[key] = fillRef(data[key]);
             }
         }
@@ -95,7 +95,7 @@ function fillRef(data) {
         if (data.hasOwnProperty("required")) {
             for (var pName in data.properties) {
                 data.name = pName;
-                if (data.required.join(',').indexOf(pName) != -1) {
+                if (data.required.join(',').indexOf(pName) !== -1) {
                     data.properties[pName].isRequired = true;
                 } else {
                     data.properties[pName].isRequired = false;
@@ -128,7 +128,7 @@ function bindPage() {
         var row = $("#tdTags tbody tr")
         var filterText = $(this).val().toLowerCase()
         $(row).each(function (i, r) {
-            if ($(r).find("td:eq(0)").text().toLowerCase().indexOf(filterText) == -1) {
+            if ($(r).find("td:eq(0)").text().toLowerCase().indexOf(filterText) === -1) {
                 $(r).hide();
             } else {
                 $(r).show();
@@ -183,7 +183,7 @@ function bindPage() {
             $(this).parent().find("textarea").val(JSON.stringify(jsonData))
             bindApiConfig();
         })
-        $("#gencode input.text-box").keypress(function () {
+        $("input[type=text]").change(function () {
             if ($(this).val().startsWith("JSON.")) {
                 $(this).val($(this).val().replace('JSON.', ''))
             }

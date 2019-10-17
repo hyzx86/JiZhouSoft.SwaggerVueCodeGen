@@ -27,13 +27,7 @@
                 }
                 </script>
                 </text>
-            }*@
-
-
-
-
-
-
+            }*@ 
     <template>
         <div class="app-container">
             <div class="filter-container">
@@ -112,11 +106,6 @@
                         <span>{{ scope.row.id }}</span>
                     </template>
                 </el-table-column>
-
-                @*@foreach (var item in Model.ListApi.Properties)
-                    {
-                        @await Html.PartialAsync("_list_ColDef", item)
-                    }*@
                 @await Html.PartialAsync("GetPartCode", new PartCodeResult
                 {
                         Properties = Model.ListApi.Properties,
@@ -220,7 +209,7 @@
             private list: @Model.ListApi.ListResultDtoItemName [] = [];
             private total = 0;
             private listLoading = true;
-            @if (Model.UpdateApi.Properties.Any(o=>o.EnumDef.Keys.Count!=0))
+            @if (Model.UpdateApi!=null&&Model.UpdateApi.Properties.Any(o=>o.EnumDef.Keys.Count!=0))
             {
                 foreach (var item in Model.UpdateApi.Properties.Where(o=>o.EnumDef.Keys.Count!=0))
                 {
@@ -263,12 +252,14 @@
             };
             private downloadLoading = false;
             private editModel: any = {};;
-
+            private dateformat(el) {
+                return moment(el).format("YYYY-MM-DD");
+            }
             created() {
                 this.getList()
             }
             private async getList() {
-                this.listLoading = true 
+                this.listLoading = true
                 const data = await this.abpService.@(Model.ListApi.JsMethodName.ToLowerStart())(
                         @await Html.PartialAsync("GetPartCode", new PartCodeResult
                             {
@@ -279,10 +270,8 @@
                 this.list = data.items
                 this.total = data.totalCount
                 // Just to simulate the time of the request
-                setTimeout(() => {
-                    this.listLoading = false
-                }, 0.5 * 1000)
-            } 
+               this.listLoading = false
+            }
             private handleFilter() {
                 this.getList()
             }
@@ -299,36 +288,24 @@
             }
             </text>
             }
-            private sortChange(data: any) {
-                const { prop, order } = data
-                if (prop === 'id') {
-                    this.sortByID(order)
-                }
-            }
+  private getSortClass(key: string) {
+    const sort = this.queryParams.sorting;
+    if (sort === `${key} descending`) {
+      return "ascending";
+    } else if (sort === `${key} descending`) {
+      return "descending";
+    } else {
+      return "";
+    }
+  } 
 
-            private sortByID(order: string) {
-                if (order === 'ascending') {
-                    this.queryParams.sorting = 'id'
-                } else {
-                    this.queryParams.sorting = 'id desc'
-                }
-                this.handleFilter()
-            } 
-            private getSortClass(key: string) {
-                const sort = this.queryParams.sorting
-                return sort === `${key}`
-                    ? 'ascending'
-                    : sort === `${key} desc`
-                        ? 'descending'
-                        : ''
-            } 
             private handleCreate() {
 
      @if(Model.CreateApi!=null) {
             <text>
                 this.editModel = new @(Model.CreateApi.RequestDtoName)()
             </text>
-         } 
+         }
                 this.dialogStatus = 'create'
                 this.dialogFormVisible = true
                 this.$nextTick(() => {

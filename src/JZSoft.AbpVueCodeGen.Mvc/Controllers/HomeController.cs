@@ -255,10 +255,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                     ParamDef paramDef = new ParamDef();
                     try
                     {
-                        paramDef.Type = item.FirstOrDefault(o => o["key"].ToString() == "type")["value"].ToString();
-                        paramDef.Format = item.FirstOrDefault(o => o["key"].ToString() == "format") == null ?
-                            string.Empty :
-                            item.FirstOrDefault(o => o["key"].ToString() == "format")["value"].ToString();
+                        GetProperties(item, paramDef);
                     }
                     catch
                     {
@@ -313,28 +310,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                     var refData = item["value"].SelectToken("[0].value.refData");
                     if (refData != null)
                     {
-                        if (refData.Count() > 1)
-                        {
-                            if (refData.Any(o => o["key"].ToString() == "enum")
-                                &&
-                                refData.Any(o => o["key"].ToString() == "x-enumNames")
-                                )
-                            {
-                                var enumNames = refData.FirstOrDefault(o => o["key"].ToString() == "x-enumNames")["value"];
-                                var enumValues = refData.FirstOrDefault(o => o["key"].ToString() == "enum")["value"];
-                                Dictionary<string, string> EnumDef = new Dictionary<string, string>();
-                                for (int i = 0; i < enumValues.Count(); i++)
-                                {
-                                    if (EnumDef.Keys.Contains(enumNames[i].ToString()))
-                                    {
-                                        EnumDef.Add(enumNames[i].ToString(), enumValues[i].ToString());
-                                    }
-                                }
-                                paramDef.EnumDef = EnumDef;
-                                paramDef.Type = "enum";
-                            }
-
-                        }
+                        FillRefProperties(paramDef, refData);
                     }
                 }
             }
@@ -342,6 +318,33 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 
 
         }
+
+        private static void FillRefProperties(ParamDef paramDef, JToken refData)
+        {
+            if (refData.Count() > 1)
+            {
+                if (refData.Any(o => o["key"].ToString().ToLower() == "enum")
+                    &&
+                    refData.Any(o => o["key"].ToString().ToLower() == "x-enumnames")
+                    )
+                {
+                    var enumNames = refData.FirstOrDefault(o => o["key"].ToString().ToLower() == "x-enumnames")["value"];
+                    var enumValues = refData.FirstOrDefault(o => o["key"].ToString().ToLower() == "enum")["value"];
+                    Dictionary<string, string> EnumDef = new Dictionary<string, string>();
+                    for (int i = 0; i < enumValues.Count(); i++)
+                    {
+                        if (!EnumDef.Keys.Contains(enumNames[i].ToString()))
+                        {
+                            EnumDef.Add(enumNames[i].ToString(), enumValues[i].ToString());
+                        }
+                    }
+                    paramDef.EnumDef = EnumDef;
+                    paramDef.Type = "enum";
+                }
+
+            }
+        }
+
         private static void GetParemeters(JToken itemInput, ParamDef paramDef)
         {
             var item = itemInput.FirstOrDefault(o => o["key"].ToString() == "name");

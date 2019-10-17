@@ -12,17 +12,16 @@
         <template slot-scope="scope">
             @if (Model.Type == "enum")
             {
-                <span>{{   @(Html.Raw(lName))Options.find(o=>o.value==scope.row.@Html.Raw(lName)).label }}</span>
+            <span>{{ getEnumValue(@(Html.Raw(lName))Options,scope.row.@Html.Raw(lName)) }}</span>
             }
             else if (Model.Type == "date-time")
             {
-                <span>{{ moment(scope.row.@Html.Raw(lName),'YYYY-MM-DD')  }}</span>
+                <span>{{ dateformat(scope.row.@Html.Raw(lName))  }}</span>
             }
             else
             {
                 <span>{{ scope.row.@Html.Raw(lName) }}</span>
-            }
-
+            } 
         </template>
     </el-table-column>
 }
