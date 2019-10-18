@@ -251,10 +251,7 @@
                 "title": [{ "required": true, "message": 'title is required', "trigger": 'blur' }]
             };
             private downloadLoading = false;
-            private editModel: any = {};;
-            private dateformat(el) {
-                return moment(el).format("YYYY-MM-DD");
-            }
+            private editModel: any = {};
             created() {
                 this.getList()
             }
