@@ -320,7 +320,7 @@
             private createData() {
                 (this.$refs['dataForm'] as Form).validate(async valid => {
                     if (valid) {
-                        this.editModel.id = 0
+                        this.editModel.id = null
                         const data = await this.abpService.@(Model.CreateApi.JsMethodName.ToLowerStart())(this.editModel as @Model.CreateApi.RequestDtoName)
                         //this.list.unshift(data)
                         this.getList()
