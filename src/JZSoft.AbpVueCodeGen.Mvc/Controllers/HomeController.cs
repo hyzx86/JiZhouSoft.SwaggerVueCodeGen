@@ -250,6 +250,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 {
                     UpdateDtoDef = Model.SelectToken(input.UpdateParamsJsonPath);
                 }
+
                 foreach (var item in UpdateDtoDef)
                 {
                     ParamDef paramDef = new ParamDef();
@@ -268,9 +269,9 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 var UpdateDtoName = Model.SelectToken("$.UpdateApi.parameters[0][3].value[0].value.refName").ToString();
                 if (!string.IsNullOrWhiteSpace(input.UpdateDtoName))
                 {
-                    dtoNames.Add(UpdateDtoName);
-                    updateapi.RequestDtoName = UpdateDtoName;
+                    dtoNames.Add(UpdateDtoName); 
                 }
+                updateapi.RequestDtoName = UpdateDtoName;
                 var UpdateApiName = Model["UpdateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
                 updateapi.JsMethodName = UpdateApiName.ToLowerStart();
                 genCodeConfig.UpdateApi = updateapi;

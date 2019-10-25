@@ -256,17 +256,26 @@ function tryGetProp(path, modal, templateName) {
     if (modal) {
         $("#tryJson").modal();
     }
+      
     if (templateName === "Json") {
-        $.post('/home/TryGetProps', { Json: JSON.stringify(json), JsonPath: path, templateName: 'Json' }, function (data) {
+        $.post('/home/TryGetProps', {
+            Json: JSON.stringify(json),
+            JsonPath: path,
+            templateName: 'Json'
+        }, function (data) {
             console.log(data);
             $("#Result").val(JSON.stringify(data));
         });
     } else {
         var jsonStr = $("#tryJsonData").val();
+        console.log("1")
         $.post('/home/GetPartCode', { Json: jsonStr, JsonPath: path, templateName: templateName }, function (data) {
-            console.log(data);
+            console.log(data); 
+            console.log("3")
             $("#Result").val(data);
         });
+        console.log("2")
     }
+   
 
 }

@@ -40,7 +40,7 @@
                         {
                             continue;
                         }
-                        await Html.PartialAsync("GetPartCode", new PartCodeResult
+                        @await Html.PartialAsync("GetPartCode", new PartCodeResult
                         {
                             Properties = Model.ListApi.Properties,
                             TemplateName = TemplateType.ListItem
@@ -285,16 +285,16 @@
             }
             </text>
             }
-  private getSortClass(key: string) {
-    const sort = this.queryParams.sorting;
-    if (sort === `${key} descending`) {
-      return "ascending";
-    } else if (sort === `${key} descending`) {
-      return "descending";
-    } else {
-      return "";
-    }
-  } 
+          private getSortClass(key: string) {
+            const sort = this.queryParams.sorting;
+            if (sort === `${key} descending`) {
+              return "ascending";
+            } else if (sort === `${key} descending`) {
+              return "descending";
+            } else {
+              return "";
+            }
+          } 
 
             private handleCreate() {
 
