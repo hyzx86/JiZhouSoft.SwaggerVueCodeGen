@@ -197,7 +197,9 @@
     import util from '@@/lib/util';
     import ajax from '@@/utils/request'
     import Pagination from '@@/components/Pagination/index.vue'
-    import {@Html.Raw(string.Join(", ", Model.ImportClassNames.Distinct()) )  } from '@@/api/abp-service-proxies'
+    import {
+      @Html.Raw(string.Join(",\r\n  ", Model.ImportClassNames.Distinct()) )  
+    } from '@@/api/abp-service-proxies'
         @@Component({
             "name": '@Model.Tag.ToLowerStart()',
             "components": {
@@ -294,7 +296,16 @@
             } else {
               return "";
             }
-          } 
+            }
+            private sortChange(data: any) {
+                const { prop, order } = data;
+                if (order === "ascending") {
+                  this.queryParams.sorting = prop;
+                } else {
+                  this.queryParams.sorting = prop + " desc";
+                }
+                this.handleFilter();
+            }  
 
             private handleCreate() {
 
@@ -334,10 +345,7 @@
             }
         </text>
 }
-
-@if(Model.UpdateApi!=null) {
-<text>
-
+@if(Model.UpdateApi!=null) {<text>
   private handleUpdate(row: any) {
         this.editModel = Object.assign({}, row)
         this.dialogStatus = 'update'
@@ -346,7 +354,6 @@
             (this.$refs['dataForm'] as Form).clearValidate()
         })
     }
-
   private updateData() {
         (this.$refs['dataForm'] as Form).validate(async valid => {
             if (valid) {
@@ -379,7 +386,6 @@
                                               TemplateName = TemplateType.QueryParamsDwonloadCode
                             })
                     )
-
         util.downloadTempFile(resultfile)
     }
 }
