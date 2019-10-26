@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace JZSoft.AbpVueCodeGen.Mvc.Models
-{
-
-
+{ 
     public class GenCodeConfigInput
     {
         public string JsonData { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text; 
-namespace JZSoft.AbpVueCodeGen.Models
+namespace JZSoft.AbpVueCodeGen.Mvc.Models
 {
     public class ApiModel
     {

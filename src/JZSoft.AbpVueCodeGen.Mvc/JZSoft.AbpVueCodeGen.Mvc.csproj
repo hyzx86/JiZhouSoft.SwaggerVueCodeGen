@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\ApiModel.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="start.bat" />
   </ItemGroup>
 
